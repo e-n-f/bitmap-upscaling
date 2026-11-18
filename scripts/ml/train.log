@@ -1,0 +1,14 @@
+params 783081
+  3.5 min  step 300  train 0.1209  val 0.1223  val 4x-pixel err 2.00%
+  7.2 min  step 600  train 0.1185  val 0.1165  val 4x-pixel err 1.90%
+ 10.9 min  step 900  train 0.1139  val 0.1128  val 4x-pixel err 1.81%
+ 14.5 min  step 1200  train 0.1069  val 0.1130  val 4x-pixel err 1.87%
+ 18.1 min  step 1500  train 0.1075  val 0.1104  val 4x-pixel err 1.81%
+ 21.6 min  step 1800  train 0.0946  val 0.1106  val 4x-pixel err 1.82%
+ 25.2 min  step 2100  train 0.1096  val 0.1085  val 4x-pixel err 1.78%
+ 28.7 min  step 2400  train 0.1024  val 0.1100  val 4x-pixel err 1.81%
+ 32.2 min  step 2700  train 0.1247  val 0.1074  val 4x-pixel err 1.74%
+ 35.7 min  step 3000  train 0.1097  val 0.1069  val 4x-pixel err 1.75%
+ 39.2 min  step 3300  train 0.1062  val 0.1067  val 4x-pixel err 1.75%
+ 42.8 min  step 3600  train 0.1055  val 0.1065  val 4x-pixel err 1.74%
+final (0.10638151317834854, 0.017466185614466667)
