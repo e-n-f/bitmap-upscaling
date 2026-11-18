@@ -1,0 +1,20 @@
+params 1115665 samples 250000
+   6.3 min  step 500  train 0.1239  val 0.1283  4x-pixel err 2.24%  near-edge err 26.54%
+  12.8 min  step 1000  train 0.1271  val 0.1242  4x-pixel err 2.15%  near-edge err 25.65%
+  18.9 min  step 1500  train 0.1168  val 0.1231  4x-pixel err 2.13%  near-edge err 25.17%
+  25.6 min  step 2000  train 0.1349  val 0.1276  4x-pixel err 2.22%  near-edge err 26.26%
+  31.7 min  step 2500  train 0.1156  val 0.1256  4x-pixel err 2.20%  near-edge err 26.04%
+  37.9 min  step 3000  train 0.1136  val 0.1267  4x-pixel err 2.16%  near-edge err 25.58%
+  44.1 min  step 3500  train 0.1201  val 0.1230  4x-pixel err 2.16%  near-edge err 25.65%
+  50.3 min  step 4000  train 0.1188  val 0.1226  4x-pixel err 2.15%  near-edge err 25.50%
+  56.4 min  step 4500  train 0.1081  val 0.1212  4x-pixel err 2.14%  near-edge err 25.40%
+  62.7 min  step 5000  train 0.1175  val 0.1205  4x-pixel err 2.14%  near-edge err 25.43%
+  68.9 min  step 5500  train 0.1127  val 0.1200  4x-pixel err 2.14%  near-edge err 25.42%
+  75.6 min  step 6000  train 0.1123  val 0.1196  4x-pixel err 2.11%  near-edge err 25.05%
+  81.8 min  step 6500  train 0.0986  val 0.1210  4x-pixel err 2.17%  near-edge err 25.76%
+  88.3 min  step 7000  train 0.1159  val 0.1197  4x-pixel err 2.15%  near-edge err 25.56%
+  95.2 min  step 7500  train 0.1412  val 0.1187  4x-pixel err 2.12%  near-edge err 25.18%
+ 101.7 min  step 8000  train 0.1129  val 0.1188  4x-pixel err 2.10%  near-edge err 24.91%
+ 108.0 min  step 8500  train 0.1154  val 0.1186  4x-pixel err 2.10%  near-edge err 25.03%
+ 114.3 min  step 9000  train 0.1463  val 0.1185  4x-pixel err 2.10%  near-edge err 24.93%
+final (0.11842115968465805, 0.021062560379505157, 0.2504911422729492)

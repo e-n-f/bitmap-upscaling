@@ -1,0 +1,10 @@
+2143 families, 2811 files: {'sys': 73, 'sym': 13, 'rev': 43, 'gf-sans_serif': 733, 'gf-display': 501, 'gf-?': 18, 'gf-handwriting': 356, 'gf-serif': 361, 'gf-monospace': 45}
+symbol families: ['sym:Noto Sans Symbols', 'sym:Noto Sans Symbols2', 'sym:Standard Symbols PS', 'sym:D050000L', 'sym:Noto Sans Math', 'sym:Noto Music', 'sym:ofl/notomusic', 'sym:ofl/notosanssymbols', 'sym:ofl/stixtwomath', 'sym:ofl/notosanssymbols2', 'sym:ofl/notosansmath', 'sym:ofl/libertinusmath', 'sym:apache/jsmathcmsy10']
+saved (200000, 32, 32) (200000, 128, 128)
+
+real	8m7.732s
+user	31m8.055s
+sys	0m31.600s
+2143 families, 2811 files: {'sys': 73, 'sym': 13, 'rev': 43, 'gf-sans_serif': 733, 'gf-display': 501, 'gf-?': 18, 'gf-handwriting': 356, 'gf-serif': 361, 'gf-monospace': 45}
+symbol families: ['sym:Noto Sans Symbols', 'sym:Noto Sans Symbols2', 'sym:Standard Symbols PS', 'sym:D050000L', 'sym:Noto Sans Math', 'sym:Noto Music', 'sym:ofl/notomusic', 'sym:ofl/notosanssymbols', 'sym:ofl/stixtwomath', 'sym:ofl/notosanssymbols2', 'sym:ofl/notosansmath', 'sym:ofl/libertinusmath', 'sym:apache/jsmathcmsy10']
+saved (2000, 32, 32) (2000, 128, 128)

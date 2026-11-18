@@ -1,0 +1,4 @@
+params 1115665 samples 200000
+   6.0 min  step 500  train 0.1171  val 0.1312  4x-pixel err 2.09%  near-edge err 24.33%
+  12.4 min  step 1000  train 0.1230  val 0.1235  4x-pixel err 1.96%  near-edge err 22.93%
+  19.0 min  step 1500  train 0.1012  val 0.1278  4x-pixel err 1.96%  near-edge err 22.65%
