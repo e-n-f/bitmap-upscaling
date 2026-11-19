@@ -99,3 +99,20 @@ python -I tools/glyph_instances.py --mac __MACOSX/._suitcase --res FONT:396 --up
 ```
 
 Requirements: numpy, Pillow and fontTools.
+
+### Shifted copies
+
+Pruna's output is deterministic, but identical glyphs with identical neighbours come out differently depending on
+where they are in the image. In both phase grids that variation shows no pattern by alignment modulo 4. So
+`phase-grid/shifted/` has four copies of each grid, offset by (0,0), (5,3), (11,14) and (14,7) on a canvas 16 px
+larger in each direction. Upscale each copy, then realign and combine them:
+
+```
+python -I tools/shifted_copies.py combine phase-grid/shifted/NewYork_9_phase_grid_shifts.json DIR_OF_UPSCALED_COPIES OUT_PREFIX
+```
+
+The upscaled copies must keep the shifted copies' file names; any image extension works. The script measures each
+copy's scale, cuts it back to the original grid's area, and writes `OUT_PREFIX_mean.png` (grey average) and
+`OUT_PREFIX_vote.png` (a pixel is black when at least 3 of the 4 thresholded copies agree). Both line up with the original
+grid at the upscaled scale, so `glyph_instances.py --layout` works on them too. If a glyph's quirks come from its position,
+they should change between the copies and mostly disappear in the combined result.

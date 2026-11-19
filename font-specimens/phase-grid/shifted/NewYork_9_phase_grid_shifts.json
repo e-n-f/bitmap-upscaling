@@ -1,0 +1,28 @@
+{
+ "source": "NewYork_9_phase_grid.png",
+ "width": 772,
+ "height": 260,
+ "pad": 16,
+ "copies": [
+  {
+   "file": "NewYork_9_phase_grid_shift_0x0.png",
+   "dx": 0,
+   "dy": 0
+  },
+  {
+   "file": "NewYork_9_phase_grid_shift_5x3.png",
+   "dx": 5,
+   "dy": 3
+  },
+  {
+   "file": "NewYork_9_phase_grid_shift_11x14.png",
+   "dx": 11,
+   "dy": 14
+  },
+  {
+   "file": "NewYork_9_phase_grid_shift_14x7.png",
+   "dx": 14,
+   "dy": 7
+  }
+ ]
+}

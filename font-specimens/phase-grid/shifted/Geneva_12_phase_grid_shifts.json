@@ -1,0 +1,28 @@
+{
+ "source": "Geneva_12_phase_grid.png",
+ "width": 916,
+ "height": 308,
+ "pad": 16,
+ "copies": [
+  {
+   "file": "Geneva_12_phase_grid_shift_0x0.png",
+   "dx": 0,
+   "dy": 0
+  },
+  {
+   "file": "Geneva_12_phase_grid_shift_5x3.png",
+   "dx": 5,
+   "dy": 3
+  },
+  {
+   "file": "Geneva_12_phase_grid_shift_11x14.png",
+   "dx": 11,
+   "dy": 14
+  },
+  {
+   "file": "Geneva_12_phase_grid_shift_14x7.png",
+   "dx": 14,
+   "dy": 7
+  }
+ ]
+}
