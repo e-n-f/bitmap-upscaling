@@ -276,7 +276,7 @@ ellipsis's three dots) are no longer mistaken for blank crops. Round trips throu
 
 ### Picks for the full-character-set grids
 
-`phase-grid/pruna-picks-mac/` has `pick_typical.py` results for Pruna's 6× upscales of 12 of the full-character-set
+`phase-grid/pruna-picks-mac/` has `pick_typical.py` results for Pruna's 6× upscales of 13 of the full-character-set
 grids:
 
 - **Chicago:** 12
@@ -285,6 +285,7 @@ grids:
 - **Monaco:** 12
 - **Toronto:** 12, 24
 - **Venice:** 14
+- **Los Angeles:** 12
 - **London, Athens, San Francisco:** 18
 
 `contact_6x_avg_mac_a.png` and `_b.png` show the averaged rebuilds side by side.
