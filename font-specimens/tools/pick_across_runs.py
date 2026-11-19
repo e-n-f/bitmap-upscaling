@@ -12,13 +12,15 @@ Writes:
   OUT_PREFIX_best.png     A-Z, a-z and 0-9 rebuilt at the largest scale from the chosen picks (thresholded), at
                           unspaced positions if the grid was made with --letterspacing
   OUT_PREFIX_best_grey.png  the same in grey
+  OUT_PREFIX_glyphs.json  identities, boxes and source metrics for each character in the rebuilt images (as
+                          pick_typical.py), plus which scale each character came from
 
 Crop margins: each appearance is cut out with --margin-y source pixels above and below the font's glyph rectangle
 (default 1.5; lines are always at least 3 px apart) and --margin-x to the left and right of its ink (default 1 for
 grids with at least 2 px letterspacing, else 0.5 so kerned neighbours stay out), because upscaled strokes can extend
 slightly beyond the source bitmap (e.g. Chicago's "g" and "y" descenders).
 """
-import argparse, json
+import argparse, json, os
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -119,6 +121,39 @@ for b in first:
         region = canvas[Y0:Y0 + img.shape[0], X0:X0 + img.shape[1]]
         region[...] = np.minimum(region, img[:region.shape[0], :region.shape[1]])
 Image.fromarray(bw).save(a.out + "_best.png"); Image.fromarray(grey).save(a.out + "_best_grey.png")
+a.upscaled = ", ".join(os.path.basename(u) for u in a.upscaled)
+
+def write_glyphs_json(path, chosen, chosen_avg, source_scale, extra=None):
+    """Per-character identities, boxes and metrics for the rebuilt images (all *_best/*_avg images share one layout).
+    chosen / chosen_avg: char -> greyscale crop placed in the rebuilt image (single winner / average)."""
+    asc = L.get("ascent")
+    out = dict(layout=os.path.basename(a.layout), upscaled=a.upscaled,
+               scale=[sx, sy], source_scale=source_scale, image_size=list(shape[::-1]),
+               coordinates="pixels in the rebuilt *_best/*_avg images; x right, y down; boxes are [x0, y0, x1, y1), x1/y1 exclusive",
+               ascent_px=asc, glyph_height_px=L["glyph_height"], glyphs=[])
+    for b in first:
+        ch = b["char"]
+        X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
+        g = dict(char=ch, code=b.get("code"), unicode=(f"U+{ord(ch):04X}" if len(ch) == 1 else None), line=b["line"])
+        c = chosen[ch]
+        g["cell"] = [X0, Y0, X0 + c.shape[1], Y0 + c.shape[0]]
+        for key, img in (("ink_best", binarize(c)), ("ink_avg", chosen_avg[ch] < 128)):
+            ys, xs = np.nonzero(img)
+            g[key] = [X0 + int(xs.min()), Y0 + int(ys.min()), X0 + int(xs.max()) + 1, Y0 + int(ys.max()) + 1] if len(xs) else None
+        if "x_offset" in b:
+            pen = b[xk] - b["x_offset"]
+            g["source"] = dict(advance=b["advance"], x_offset=b["x_offset"], ink_width=b["x1"] - b["x0"],
+                               pen_x=pen, ink_x0=b[xk], top_y=b["y0"])
+            g["origin"] = [round((pen - x_min) * sx, 2), round((b["y0"] + asc - y_min) * sy, 2) if asc is not None else None]
+            g["advance_px"] = round(b["advance"] * sx, 2)
+        if extra:
+            g.update(extra.get(ch, {}))
+        out["glyphs"].append(g)
+    json.dump(out, open(path, "w"), indent=1, ensure_ascii=False)
+
+write_glyphs_json(a.out + "_glyphs.json", {ch: choice[ch]["crop"] for ch in chars},
+                  {ch: np.where(binarize(choice[ch]["crop"]), 0, 255).astype(np.uint8) for ch in chars}, None,
+                  {ch: dict(scale_used=choice[ch]["run"]["scale"], median_difference_pct=round(choice[ch]["med"], 1)) for ch in chars})
 from collections import Counter
 print("scale used per character:", " ".join(f"{ch}:{choice[ch]['run']['scale']}" for ch in chars))
 print("count by scale:", dict(Counter(choice[ch]["run"]["scale"] for ch in chars)))

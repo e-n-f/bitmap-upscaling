@@ -20,6 +20,10 @@ in the JSON has "code" (the font's byte code) and "char" (its Unicode equivalent
 --letterspacing N adds N blank pixels between glyphs, and each glyph also advances past any ink that overhangs its
 normal advance width, so kerned glyphs no longer touch. Each box in the JSON then also has x0_unspaced and x1_unspaced:
 where that glyph sits on an unspaced line, so the spacing can be taken out again after upscaling.
+
+Font metrics: the JSON's "ascent" is the font's ascent (rows from the top of a glyph box to the baseline), and each
+box has "advance" (the glyph's advance width) and "x_offset" (from the pen position to the glyph's first ink column),
+both in source pixels, so the pen position of a glyph is x0 - x_offset and its baseline is y0 + ascent.
 """
 import argparse, json, os, sys
 import numpy as np
@@ -99,7 +103,9 @@ for n in range(16):
         ox, oy = bx, by + li * pitch_y
         img[oy:oy + H, ox:ox + bits.shape[1]] |= bits
         for (ch_code, x0, x1), (_, u0, u1) in zip(pos, plain):
-            boxes.append(dict(char=label(ch_code), code=ch_code, x0=ox + x0, x1=ox + x1, y0=oy, y1=oy + H,
+            _, x_off, adv = font.glyph(ch_code)
+            boxes.append(dict(char=label(ch_code), code=ch_code, advance=int(adv), x_offset=int(x_off),
+                              x0=ox + x0, x1=ox + x1, y0=oy, y1=oy + H,
                               x0_unspaced=ox + u0, x1_unspaced=ox + u1,
                               x_phase=ox % 4, y_phase=oy % 4, block=[xp, yp], cell=[c, r], line=li))
 if a.caption:
@@ -122,7 +128,7 @@ if a.caption:
         b["y0"] += band; b["y1"] += band
         assert b["y0"] % 4 == b["y_phase"]
 Image.fromarray(np.where(img, 0, 255).astype(np.uint8)).convert("1").save(a.out + ".png")
-json.dump(dict(width=W, height=Hh, glyph_height=H, letterspacing=a.letterspacing, caption=a.caption or "", boxes=boxes),
+json.dump(dict(width=W, height=Hh, glyph_height=H, ascent=int(font.ascent), letterspacing=a.letterspacing, caption=a.caption or "", boxes=boxes),
           open(a.out + ".json", "w"))
 print(f"{a.out}.png {W}x{Hh}; line origins have x%4 in {sorted({b['x_phase'] for b in boxes})} and "
       f"y%4 in {sorted({b['y_phase'] for b in boxes})}; {len(boxes)} glyphs")

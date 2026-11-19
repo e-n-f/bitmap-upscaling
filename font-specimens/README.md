@@ -194,7 +194,7 @@ Compared with the earlier grids:
 
 - **Full printable ASCII:** each block has eight short lines: A–M, N–Z, a–m, n–z, 0–9, and the 32 punctuation and
   symbol characters in three lines. A few decorative fonts lack some characters, which are skipped: London 18
-  (`< > ^ ` ~`), San Francisco 18 (`^ } ~`), Los Angeles 12 (`~`) and Venice 14 (`@`).
+  (`< > ^ ` ~`), San Francisco 18 (`^ ` ~`), Los Angeles 12 (`` ` ``) and Venice 14 (`@`).
 - **Letterspacing:** 2 px instead of 4.
 - **Squarer images:** the 16 blocks are arranged in whichever number of columns makes the image closest to square,
   between 0.88:1 and 1.19:1. Some grids have a few empty cells.
@@ -289,3 +289,28 @@ grids:
 - **London, Athens, San Francisco:** 18
 
 `contact_6x_avg_mac_a.png` and `_b.png` show the averaged rebuilds side by side.
+
+### Glyph identities, boxes and metrics (`_glyphs.json`)
+
+Every set of picks has a `_glyphs.json` describing the rebuilt images (`_best`, `_best_grey`, `_avg` and `_avg_grey`
+share one layout). The top level gives the layout and upscale it came from, the scale, the image size, and the source
+font's ascent and glyph height in source pixels. Each entry in `glyphs` has:
+
+- **Identity:** `char`, `unicode` and `code` (the font's byte code). Codes below 32 are written `<11>` etc.
+- **Position:** `line`, the text line in the rebuilt image.
+- **Boxes:** in rebuilt-image pixels, as `[x0, y0, x1, y1)` with x right and y down.
+  - `cell`: the area the glyph was cut from, including the crop margins.
+  - `ink_best` and `ink_avg`: the ink bounding boxes of the single winner and of the average.
+- **Source metrics:** `source` holds the font's metrics in source pixels: `advance`, `x_offset` (from the pen position
+  to the first ink column), `ink_width`, and positions. `origin` is the pen position on the baseline in rebuilt-image
+  pixels, and `advance_px` is the advance width in rebuilt-image pixels. These are what a TrueType build needs to
+  reproduce the bitmap font's spacing.
+- **Pick statistics:**
+  - `pick_typical.py`: `chosen_appearance`, `averaged_appearances`, `median_difference_pct` and `outliers`.
+  - `pick_across_runs.py`: `scale_used` and `median_difference_pct`.
+
+To support this, the grids' layout files now also record the font's `ascent` and each glyph's `advance` and
+`x_offset`. All the layout files were regenerated; their images and all existing fields are unchanged except for one
+correction. In the earlier ASCII grids for Los Angeles 12 and San Francisco 18, an empty backquote glyph had shifted
+the labels of the last few characters on the last line by one. Boxes are now labelled by the glyph's own code, and
+all picks were re-run.

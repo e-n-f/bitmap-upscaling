@@ -18,13 +18,17 @@ more than 1.6x the chosen one's are flagged as outliers. Writes:
                           background (white) and ink (black) levels, the normalised appearances are averaged, and the
                           average is thresholded at 50%. This smooths edge jitter and background tint.
   OUT_PREFIX_avg_grey.png the averages before thresholding
+  OUT_PREFIX_glyphs.json  for each character in the rebuilt images: its identity (char, Unicode, the font's byte code),
+                          its cell and ink bounding boxes (single winner and average) in rebuilt-image pixels, and the
+                          source font's metrics (advance width, left offset; pen origin and baseline in rebuilt-image
+                          pixels), plus the pick statistics
 
 Crop margins: each appearance is cut out with --margin-y source pixels above and below the font's glyph rectangle
 (default 1.5; lines are always at least 3 px apart) and --margin-x to the left and right of its ink (default 1 for
 grids with at least 2 px letterspacing, else 0.5 so kerned neighbours stay out), because upscaled strokes can extend
 slightly beyond the source bitmap (e.g. Chicago's "g" and "y" descenders).
 """
-import argparse, json
+import argparse, json, os
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -125,10 +129,44 @@ def rebuild(images, path):
     Image.fromarray(canvas).save(path)
 
 
+def write_glyphs_json(path, chosen, chosen_avg, source_scale, extra=None):
+    """Per-character identities, boxes and metrics for the rebuilt images (all *_best/*_avg images share one layout).
+    chosen / chosen_avg: char -> greyscale crop placed in the rebuilt image (single winner / average)."""
+    asc = L.get("ascent")
+    out = dict(layout=os.path.basename(a.layout), upscaled=os.path.basename(a.upscaled if hasattr(a, "upscaled") and isinstance(a.upscaled, str) else ""),
+               scale=[sx, sy], source_scale=source_scale, image_size=list(shape[::-1]),
+               coordinates="pixels in the rebuilt *_best/*_avg images; x right, y down; boxes are [x0, y0, x1, y1), x1/y1 exclusive",
+               ascent_px=asc, glyph_height_px=L["glyph_height"], glyphs=[])
+    for b in first:
+        ch = b["char"]
+        X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
+        g = dict(char=ch, code=b.get("code"), unicode=(f"U+{ord(ch):04X}" if len(ch) == 1 else None), line=b["line"])
+        c = chosen[ch]
+        g["cell"] = [X0, Y0, X0 + c.shape[1], Y0 + c.shape[0]]
+        for key, img in (("ink_best", binarize(c)), ("ink_avg", chosen_avg[ch] < 128)):
+            ys, xs = np.nonzero(img)
+            g[key] = [X0 + int(xs.min()), Y0 + int(ys.min()), X0 + int(xs.max()) + 1, Y0 + int(ys.max()) + 1] if len(xs) else None
+        if "x_offset" in b:
+            pen = b[xk] - b["x_offset"]
+            g["source"] = dict(advance=b["advance"], x_offset=b["x_offset"], ink_width=b["x1"] - b["x0"],
+                               pen_x=pen, ink_x0=b[xk], top_y=b["y0"])
+            g["origin"] = [round((pen - x_min) * sx, 2), round((b["y0"] + asc - y_min) * sy, 2) if asc is not None else None]
+            g["advance_px"] = round(b["advance"] * sx, 2)
+        if extra:
+            g.update(extra.get(ch, {}))
+        out["glyphs"].append(g)
+    json.dump(out, open(path, "w"), indent=1, ensure_ascii=False)
+
+
 rebuild({ch: np.where(binarize(p[1][p[3]]), 0, 255).astype(np.uint8) for ch, p in picks.items()}, a.out + "_best.png")
 rebuild({ch: p[1][p[3]] for ch, p in picks.items()}, a.out + "_best_grey.png")
 rebuild({ch: np.where(p[4] < 128, 0, 255).astype(np.uint8) for ch, p in picks.items()}, a.out + "_avg.png")
 rebuild({ch: p[4] for ch, p in picks.items()}, a.out + "_avg_grey.png")
+stats = {ch: dict(chosen_appearance=dict(zip(("x_phase", "y_phase"), p[0][p[3]]["block"])), averaged_appearances=int(p[5]),
+                  median_difference_pct=round(float(m), 1), outliers=int(n))
+         for (ch, p), (_, m, n) in zip(picks.items(), report)}
+write_glyphs_json(a.out + "_glyphs.json", {ch: p[1][p[3]] for ch, p in picks.items()}, {ch: p[4] for ch, p in picks.items()},
+                  None, stats)
 
 print(f"averages use {np.mean([p[5] for p in picks.values()]):.1f} appearances per character on average")
 print("chosen version's median difference from the other appearances (% of ink), and number of outliers:")
