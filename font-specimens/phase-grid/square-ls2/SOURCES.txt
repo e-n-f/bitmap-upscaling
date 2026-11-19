@@ -1,0 +1,29 @@
+# name | AppleDouble file in Originals.zip's __MACOSX/ | resource
+Chicago_12|._System 6.0.8 Fonts_ff|FONT:12
+Geneva_9|._System 6.0.8 Fonts_ff|FONT:393
+Geneva_10|._System 6.0.8 Fonts_ff|FONT:394
+Geneva_12|._System 6.0.8 Fonts_ff|FONT:396
+Geneva_14|._System 6.0.8 Fonts_ff|FONT:398
+NewYork_9|._System 6.0.8 Fonts_ff|FONT:265
+NewYork_10|._LOSTFONTS|FONT:266
+NewYork_12|._LOSTFONTS|FONT:268
+NewYork_14|._LOSTFONTS|FONT:270
+Monaco_9|._System 6.0.8 Fonts_ff|FONT:521
+Monaco_12|._System 6.0.8 Fonts_ff|FONT:524
+Times_9|._System 6.0.8 Fonts_ff|FONT:2569
+Times_10|._System 6.0.8 Fonts_ff|FONT:2570
+Times_12|._System 6.0.8 Fonts_ff|FONT:2572
+Helvetica_9|._System 6.0.8 Fonts_ff|FONT:2697
+Helvetica_10|._System 6.0.8 Fonts_ff|FONT:2698
+Helvetica_12|._System 6.0.8 Fonts_ff|FONT:2700
+Courier_9|._Courier  9|NFNT:2825
+Courier_10|._Courier 10|NFNT:2826
+Courier_12|._Courier 12|NFNT:2828
+Palatino_10|._System 6.0.8 Fonts_ff|FONT:2058
+Palatino_12|._System 6.0.8 Fonts_ff|FONT:2060
+Venice_14|._System 6.0.8 Fonts_ff|FONT:654
+Toronto_12|._LOSTFONTS|FONT:1164
+LosAngeles_12|._LOSTFONTS|FONT:1548
+London_18|._LOSTFONTS|FONT:786
+Athens_18|._LOSTFONTS|FONT:914
+SanFrancisco_18|._LOSTFONTS|FONT:1042

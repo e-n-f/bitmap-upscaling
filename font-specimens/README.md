@@ -175,3 +175,36 @@ its consistency score.
 
 Shrinking each upscaled version back to 1× reproduces the source bitmap almost exactly at every scale, so pixel
 fidelity can't separate good renderings from bad ones; consistency can.
+
+### Squarer letterspaced grids for 28 classic Mac fonts
+
+`phase-grid/square-ls2/` has phase grids for 28 classic Mac fonts and sizes (listed with their sources in `SOURCES.txt`):
+
+- **Chicago:** 12
+- **Geneva:** 9, 10, 12, 14
+- **New York:** 9, 10, 12, 14
+- **Monaco:** 9, 12
+- **Times, Helvetica and Courier:** 9, 10, 12
+- **Palatino:** 10, 12
+- **Venice:** 14
+- **Toronto, Los Angeles:** 12
+- **London, Athens, San Francisco:** 18
+
+Compared with the earlier grids:
+
+- **Letterspacing:** 2 px instead of 4.
+- **Shorter lines:** the text is in five lines (A–M, N–Z, a–m, n–z, 0–9).
+- **Squarer images:** the 16 blocks are arranged in whichever number of columns makes the image closest to square,
+  between 0.72:1 and 1.37:1. Some grids have a few empty cells.
+
+Each block keeps its own x and y phase wherever it is placed. In the JSON, `block` is `[x phase, y phase]` and `cell`
+is `[column, row]`. `pick_typical.py` and `pick_across_runs.py` work with these unchanged, and rebuild the text at
+normal spacing.
+
+Made with:
+
+```
+python -I tools/phase_grid.py OUT_PREFIX --mac __MACOSX/._suitcase --res FONT:id --letterspacing 2 --short-lines --square
+```
+
+Without `--short-lines` and `--square`, `phase_grid.py` produces exactly the original layouts.
