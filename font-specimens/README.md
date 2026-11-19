@@ -156,3 +156,22 @@ python -I tools/pick_typical.py --layout phase-grid/NewYork_9_phase_grid_ls4.jso
 
 Round trip: a nearest-neighbour 8× "upscale" of the spaced grid, picked and rebuilt this way, matches the unspaced
 grid exactly.
+
+### Combining upscales at several scales
+
+Pruna's renderings of some characters depend on the scale factor; for example, New York 9's "g" ear comes out as a
+detached dot at 8× but as a connected stroke at 6× and 7×. `pick_across_runs.py` takes several upscales of the same
+grid, picks each character's most typical version in each, and uses the scale where that character is most consistent
+(smallest median difference among its 16 appearances). `--force g:6,...` overrides the choice. It rebuilds the
+alphabet at the largest scale, with normal spacing for a letterspaced grid.
+
+```
+python -I tools/pick_across_runs.py --layout phase-grid/NewYork_9_phase_grid_ls4.json --out OUT_PREFIX up6x.png up7x.png up8x.png
+```
+
+`phase-grid/pruna-picks/NewYork_9_ls4_6x7x8x_*` is the result for Pruna's 6×, 7× and 8× upscales of the letterspaced
+New York 9 grid. 42 characters came from 6× and 20 from 8×; none from 7×. `_compare.png` shows each scale's pick with
+its consistency score.
+
+Shrinking each upscaled version back to 1× reproduces the source bitmap almost exactly at every scale, so pixel
+fidelity can't separate good renderings from bad ones; consistency can.
