@@ -31,7 +31,7 @@ as QuickDraw draws text. Nothing is smoothed or resampled.
 | `mac-classic/` | 94 distinct FONT/NFNT resources from `Macintosh OS 1-6/Originals/Originals.zip` in [JohnDDuncanIII/macfonts](https://github.com/JohnDDuncanIII/macfonts), at 1×. `INDEX.txt` maps every resource (suitcase, type and ID) to its specimen or notes it as an exact duplicate |
 | `sheets-1x/`, `sheets-2x/` | The same specimens combined into sheets by family, built by `tools/build_sheets.py` |
 | `lisa-screenshot-match/` | Twiggy Raw rendered against text cut from the Lisa screenshot (`inputs/lisa/lisaos31.png`), and a test showing the menu font is not Modern 12 with synthetic bold |
-| `phase-grid/` | Alignment test: Geneva 12 (System 0.85, FONT 396) with A–Z, a–z and 0–9 repeated in a 4×4 grid of blocks, one block for each combination of x%4 and y%4 of the line origins. The image has no labels; the `.json` lists every glyph's box with its x and y phase |
+| `phase-grid/` | Alignment test: Geneva 12 (System 0.85, FONT 396) and New York 9 (System 6.0.8, FONT 265), each with A–Z, a–z and 0–9 repeated in a 4×4 grid of blocks, one block for each combination of x%4 and y%4 of the line origins. The image has no labels; the `.json` lists every glyph's box with its x and y phase |
 | `tools/` | The parsers and specimen generators, plus `phase_grid.py` and `glyph_instances.py` (below) |
 
 ## Lisa source fonts (`.F` files)
