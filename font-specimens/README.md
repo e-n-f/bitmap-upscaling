@@ -116,3 +116,28 @@ copy's scale, cuts it back to the original grid's area, and writes `OUT_PREFIX_m
 `OUT_PREFIX_vote.png` (a pixel is black when at least 3 of the 4 thresholded copies agree). Both line up with the original
 grid at the upscaled scale, so `glyph_instances.py --layout` works on them too. If a glyph's quirks come from its position,
 they should change between the copies and mostly disappear in the combined result.
+
+### Picking the most typical version of each character
+
+Since every character appears 16 times in a phase grid, a simpler alternative to the shifted copies is to pick, for each
+character, the version the upscaler produces most typically:
+
+```
+python -I tools/pick_typical.py --layout phase-grid/NewYork_9_phase_grid.json --upscaled UPSCALED.png --out OUT_PREFIX
+```
+
+How it picks:
+
+- **Thresholding:** each appearance is thresholded halfway between its own background and ink levels, to remove the
+  upscaler's uneven background tint.
+- **Comparing:** appearances are compared pairwise, counting differing pixels as a % of the character's ink.
+- **Choosing:** the chosen version has the smallest median difference from the others, so occasional bad renderings
+  can't win. Versions more than 1.6× as far from the rest are flagged as outliers.
+
+It writes:
+
+- `_choices.png`: every appearance, with the pick boxed and outliers marked `x`. `--chars` limits this sheet to particular characters.
+- `_best.png`: A–Z, a–z and 0–9 rebuilt from the picks, thresholded.
+- `_best_grey.png`: the same, with the picks' original grey pixels.
+
+`phase-grid/pruna-picks/` has the results for the Pruna upscales of both grids.

@@ -1,0 +1,2 @@
+chosen version's median difference from the other appearances (% of ink), and number of outliers:
+A:9(1x)  B:9(1x)  C:10  D:11(2x)  E:13  F:11(1x)  G:12  H:10  I:12  J:10(5x)  K:10(2x)  L:10(4x)  M:13  N:7(6x)  O:10(1x)  P:9  Q:12(1x)  R:10(3x)  S:11  T:12  U:9(1x)  V:11  W:12  X:18  Y:13  Z:16  a:14(1x)  b:10  c:11  d:10  e:10(3x)  f:13  g:13  h:9(6x)  i:12(7x)  j:9(7x)  k:11  l:12(1x)  m:17  n:13  o:9  p:10  q:11  r:14  s:13(6x)  t:10(3x)  u:12(3x)  v:9(2x)  w:13  x:13(1x)  y:12(1x)  z:17  0:7(2x)  1:9(5x)  2:11  3:10  4:8(1x)  5:10(2x)  6:7(2x)  7:13  8:9  9:7(1x)
