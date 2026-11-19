@@ -141,3 +141,18 @@ It writes:
 - `_best_grey.png`: the same, with the picks' original grey pixels.
 
 `phase-grid/pruna-picks/` has the results for the Pruna upscales of both grids.
+
+### Letterspaced grid
+
+`phase-grid/NewYork_9_phase_grid_ls4.png` is the New York 9 grid with 4 extra blank pixels between glyphs, made with
+`phase_grid.py --letterspacing 4`. Each glyph also advances past any ink that overhangs its normal width, so kerned
+glyphs (like the "f" serif that reaches into the "g") no longer touch their neighbours in the upscaler's input. Its
+`.json` records each glyph's normal unspaced position as well (`x0_unspaced`, `x1_unspaced`). `pick_typical.py` uses
+those to rebuild the alphabet with normal spacing after picking:
+
+```
+python -I tools/pick_typical.py --layout phase-grid/NewYork_9_phase_grid_ls4.json --upscaled UPSCALED.png --out OUT_PREFIX
+```
+
+Round trip: a nearest-neighbour 8× "upscale" of the spaced grid, picked and rebuilt this way, matches the unspaced
+grid exactly.

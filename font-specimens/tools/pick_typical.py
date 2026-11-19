@@ -10,7 +10,8 @@ more than 1.6x the chosen one's are flagged as outliers. Writes:
   OUT_PREFIX_choices.png  every appearance of every character (thresholded), the chosen one boxed, each labelled with
                           its median difference from the others; outliers are labelled "x"
   OUT_PREFIX_best.png     A-Z, a-z and 0-9 rebuilt from the chosen versions (thresholded, black and white), placed where
-                          the glyphs are in the grid's first block
+                          the glyphs are in the grid's first block, at their unspaced positions if the grid was
+                          made with --letterspacing
   OUT_PREFIX_best_grey.png  the same, using the chosen versions' original grey pixels
 """
 import argparse, json
@@ -75,14 +76,15 @@ S.save(a.out + "_choices.png")
 
 # rebuild the first block's lines from the chosen versions
 first = [b for b in L["boxes"] if b["block"] == [0, 0]]
-x_min = min(b["x0"] for b in first) - 2; y_min = min(b["y0"] for b in first) - 2
-x_max = max(b["x1"] for b in first) + 2; y_max = max(b["y1"] for b in first) + 2
+xk = "x0_unspaced" if "x0_unspaced" in first[0] else "x0"          # take letterspacing back out when present
+x_min = min(b[xk] for b in first) - 2; y_min = min(b["y0"] for b in first) - 2
+x_max = max(b[xk.replace("x0", "x1")] for b in first) + 2; y_max = max(b["y1"] for b in first) + 2
 shape = (int((y_max - y_min) * sy), int((x_max - x_min) * sx))
 bw = np.full(shape, 255, np.uint8); grey = np.full(shape, 255, np.uint8)
 for b in first:
     inst, crops, bits, best = picks[b["char"]]
     c = crops[best]; cb = np.where(binarize(c), 0, 255).astype(np.uint8)
-    X0, Y0 = int(round((b["x0"] - 0.5 - x_min) * sx)), int(round((b["y0"] - y_min) * sy))
+    X0, Y0 = int(round((b[xk] - 0.5 - x_min) * sx)), int(round((b["y0"] - y_min) * sy))
     for canvas, img in ((bw, cb), (grey, c)):
         region = canvas[Y0:Y0 + img.shape[0], X0:X0 + img.shape[1]]
         region[...] = np.minimum(region, img[:region.shape[0], :region.shape[1]])
