@@ -1,5 +1,7 @@
 # bitmap-upscaling
 
+Also here: [`font-specimens/`](font-specimens/), pixel-exact specimens of Lisa and classic Mac bitmap fonts, decoded from the Lisa source release and from classic Mac resource forks.
+
 Experiments in upscaling 1-bit bitmap fonts so that stair-stepped diagonals and implied curves come back as real
 slopes and curves, while the output stays strictly 1-bit.
 

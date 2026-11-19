@@ -1,0 +1,212 @@
+DAMAGED  Chicago 10  [System 0.85 Fonts: FONT 10]  (glyph location table is corrupt; skipped)
+DAMAGED  Geneva 24  [System 0.85 Fonts: FONT 408]  (glyph location table is corrupt; skipped)
+DAMAGED  New York 14  [System 0.85 Fonts: FONT 270]  (glyph location table is corrupt; skipped)
+DAMAGED  Swan Song 12  [System 0.85 Fonts: FONT 12812]  (glyph location table is corrupt; skipped)
+Courier 9                    Courier  9                 NFNT 2825   -> Courier_9
+Courier 10                   Courier 10                 NFNT 2826   -> Courier_10
+Courier 12                   Courier 12                 NFNT 2828   -> Courier_12
+Courier 14                   Courier 14                 NFNT 2830   -> Courier_14
+Courier 18                   Courier 18                 NFNT 2834   -> Courier_18
+Courier 24                   Courier 24                 NFNT 2840   -> Courier_24
+Athens 18                    LOSTFONTS                  FONT 914    -> Athens_18
+Cairo 18                     LOSTFONTS                  FONT 1426   -> Cairo_18
+Geneva 10                    LOSTFONTS                  FONT 394    -> Geneva_10
+Geneva 14                    LOSTFONTS                  FONT 398    -> Geneva_14
+Geneva 18                    LOSTFONTS                  FONT 402    -> Geneva_18
+Geneva 20                    LOSTFONTS                  FONT 404    -> Geneva_20
+Geneva 24                    LOSTFONTS                  FONT 408    -> Geneva_24
+London 18                    LOSTFONTS                  FONT 786    -> London_18
+Los Angeles 12               LOSTFONTS                  FONT 1548   -> LosAngeles_12
+Los Angeles 24               LOSTFONTS                  FONT 1560   -> LosAngeles_24
+Monaco 12                    LOSTFONTS                  FONT 524    -> Monaco_12
+New York 9                   LOSTFONTS                  FONT 265    -> NewYork_9
+New York 10                  LOSTFONTS                  FONT 266    -> NewYork_10
+New York 12                  LOSTFONTS                  FONT 268    -> NewYork_12
+New York 14                  LOSTFONTS                  FONT 270    -> NewYork_14
+New York 18                  LOSTFONTS                  FONT 274    -> NewYork_18
+New York 20                  LOSTFONTS                  FONT 276    -> NewYork_20
+New York 24                  LOSTFONTS                  FONT 280    -> NewYork_24
+New York 36                  LOSTFONTS                  FONT 292    -> NewYork_36
+San Francisco 18             LOSTFONTS                  FONT 1042   -> SanFrancisco_18
+Taliesin 18                  LOSTFONTS                  FONT 3090   -> Taliesin_18
+Toronto 9                    LOSTFONTS                  FONT 1161   -> Toronto_9
+Toronto 12                   LOSTFONTS                  FONT 1164   -> Toronto_12
+Toronto 14                   LOSTFONTS                  FONT 1166   -> Toronto_14
+Toronto 18                   LOSTFONTS                  FONT 1170   -> Toronto_18
+Toronto 24                   LOSTFONTS                  FONT 1176   -> Toronto_24
+Venice 14                    LOSTFONTS                  FONT 654    -> Venice_14
+Cairo 18                     Symbol 13                  NFNT 5484   -> Cairo_18-v2
+Symbol 14                    Symbol 15                  NFNT 2958   -> Symbol_14
+Cairo 18                     Symbol 24                  NFNT 5484   -> Cairo_18-v3
+Symbol 24                    Symbol 31                  NFNT 2968   -> Symbol_24
+San Francisco 18             System 0.85 Fonts          FONT 1042   -> duplicate of SanFrancisco_18
+Cairo 18                     System 0.85 Fonts          FONT 1426   -> duplicate of Cairo_18
+Toronto 9                    System 0.85 Fonts          FONT 1161   -> duplicate of Toronto_9
+Toronto 12                   System 0.85 Fonts          FONT 1164   -> duplicate of Toronto_12
+Toronto 14                   System 0.85 Fonts          FONT 1166   -> duplicate of Toronto_14
+Toronto 18                   System 0.85 Fonts          FONT 1170   -> duplicate of Toronto_18
+Toronto 24                   System 0.85 Fonts          FONT 1176   -> duplicate of Toronto_24
+New York 36                  System 0.85 Fonts          FONT 292    -> duplicate of NewYork_36
+Los Angeles 12               System 0.85 Fonts          FONT 1548   -> duplicate of LosAngeles_12
+Los Angeles 24               System 0.85 Fonts          FONT 1560   -> duplicate of LosAngeles_24
+Chicago 12                   System 0.85 Fonts          FONT 12     -> Chicago_12
+Geneva 9                     System 0.85 Fonts          FONT 393    -> Geneva_9
+Geneva 12                    System 0.85 Fonts          FONT 396    -> Geneva_12
+Geneva 14                    System 0.85 Fonts          FONT 398    -> Geneva_14-v2
+Geneva 18                    System 0.85 Fonts          FONT 402    -> Geneva_18-v2
+New York 9                   System 0.85 Fonts          FONT 265    -> NewYork_9-v2
+New York 12                  System 0.85 Fonts          FONT 268    -> NewYork_12-v2
+New York 18                  System 0.85 Fonts          FONT 274    -> NewYork_18-v2
+New York 24                  System 0.85 Fonts          FONT 280    -> NewYork_24-v2
+Athens 18                    System 6.0.8 Fonts_ff      FONT 914    -> duplicate of Athens_18
+Cairo 18                     System 6.0.8 Fonts_ff      FONT 1426   -> duplicate of Cairo_18
+London 18                    System 6.0.8 Fonts_ff      FONT 786    -> duplicate of London_18
+Los Angeles 12               System 6.0.8 Fonts_ff      FONT 1548   -> duplicate of LosAngeles_12
+Los Angeles 24               System 6.0.8 Fonts_ff      FONT 1560   -> duplicate of LosAngeles_24
+Mobile 18                    System 6.0.8 Fonts_ff      FONT 3090   -> Mobile_18
+San Francisco 18             System 6.0.8 Fonts_ff      FONT 1042   -> duplicate of SanFrancisco_18
+Venice 14                    System 6.0.8 Fonts_ff      FONT 654    -> Venice_14-v2
+Courier 9                    System 6.0.8 Fonts_ff      FONT 2825   -> duplicate of Courier_9
+Courier 14                   System 6.0.8 Fonts_ff      FONT 2830   -> duplicate of Courier_14
+Courier 24                   System 6.0.8 Fonts_ff      FONT 2840   -> duplicate of Courier_24
+Helvetica 9                  System 6.0.8 Fonts_ff      FONT 2697   -> Helvetica_9
+Helvetica 14                 System 6.0.8 Fonts_ff      FONT 2702   -> Helvetica_14
+Helvetica 18                 System 6.0.8 Fonts_ff      FONT 2706   -> Helvetica_18
+Helvetica 24                 System 6.0.8 Fonts_ff      FONT 2712   -> Helvetica_24
+Symbol 9                     System 6.0.8 Fonts_ff      FONT 2953   -> duplicate of Cairo_18-v2
+Symbol 14                    System 6.0.8 Fonts_ff      FONT 2958   -> duplicate of Symbol_14
+Symbol 18                    System 6.0.8 Fonts_ff      FONT 2962   -> duplicate of Cairo_18-v3
+Symbol 24                    System 6.0.8 Fonts_ff      FONT 2968   -> duplicate of Symbol_24
+Times 9                      System 6.0.8 Fonts_ff      FONT 2569   -> Times_9
+Courier 18                   System 6.0.8 Fonts_ff      FONT 2834   -> duplicate of Courier_18
+Times 18                     System 6.0.8 Fonts_ff      FONT 2578   -> Times_18
+Times 14                     System 6.0.8 Fonts_ff      FONT 2574   -> Times_14
+Times 24                     System 6.0.8 Fonts_ff      FONT 2584   -> Times_24
+Courier 10                   System 6.0.8 Fonts_ff      FONT 2826   -> duplicate of Courier_10
+Courier 12                   System 6.0.8 Fonts_ff      FONT 2828   -> duplicate of Courier_12
+Helvetica 10                 System 6.0.8 Fonts_ff      FONT 2698   -> Helvetica_10
+Helvetica 12                 System 6.0.8 Fonts_ff      FONT 2700   -> Helvetica_12
+Times 10                     System 6.0.8 Fonts_ff      FONT 2570   -> Times_10
+Times 12                     System 6.0.8 Fonts_ff      FONT 2572   -> Times_12
+New York 9                   System 6.0.8 Fonts_ff      FONT 265    -> NewYork_9-v3
+New York 10                  System 6.0.8 Fonts_ff      FONT 266    -> duplicate of NewYork_10
+New York 12                  System 6.0.8 Fonts_ff      FONT 268    -> duplicate of NewYork_12
+New York 14                  System 6.0.8 Fonts_ff      FONT 270    -> duplicate of NewYork_14
+New York 18                  System 6.0.8 Fonts_ff      FONT 274    -> duplicate of NewYork_18
+New York 20                  System 6.0.8 Fonts_ff      FONT 276    -> duplicate of NewYork_20
+New York 24                  System 6.0.8 Fonts_ff      FONT 280    -> duplicate of NewYork_24
+Palatino 10                  System 6.0.8 Fonts_ff      FONT 2058   -> Palatino_10
+Palatino 12                  System 6.0.8 Fonts_ff      FONT 2060   -> Palatino_12
+Palatino 14                  System 6.0.8 Fonts_ff      FONT 2062   -> Palatino_14
+Palatino 18                  System 6.0.8 Fonts_ff      FONT 2066   -> Palatino_18
+Palatino 24                  System 6.0.8 Fonts_ff      FONT 2072   -> Palatino_24
+Chicago 12                   System 6.0.8 Fonts_ff      FONT 12     -> Chicago_12-v2
+Geneva 9                     System 6.0.8 Fonts_ff      FONT 393    -> Geneva_9-v2
+Geneva 10                    System 6.0.8 Fonts_ff      FONT 394    -> Geneva_10-v2
+Geneva 12                    System 6.0.8 Fonts_ff      FONT 396    -> Geneva_12-v2
+Geneva 14                    System 6.0.8 Fonts_ff      FONT 398    -> Geneva_14-v3
+Geneva 18                    System 6.0.8 Fonts_ff      FONT 402    -> Geneva_18-v3
+Geneva 20                    System 6.0.8 Fonts_ff      FONT 404    -> Geneva_20-v2
+Geneva 24                    System 6.0.8 Fonts_ff      FONT 408    -> Geneva_24-v2
+Monaco 9                     System 6.0.8 Fonts_ff      FONT 521    -> Monaco_9
+Monaco 12                    System 6.0.8 Fonts_ff      FONT 524    -> Monaco_12-v2
+Symbol 10                    System 6.0.8 Fonts_ff      FONT 2954   -> Symbol_10
+Symbol 12                    System 6.0.8 Fonts_ff      FONT 2956   -> Symbol_12
+Athens 18                    System 6.0.8 Fonts~        FONT 914    -> duplicate of Athens_18
+Cairo 18                     System 6.0.8 Fonts~        FONT 1426   -> duplicate of Cairo_18
+London 18                    System 6.0.8 Fonts~        FONT 786    -> duplicate of London_18
+Los Angeles 12               System 6.0.8 Fonts~        FONT 1548   -> duplicate of LosAngeles_12
+Los Angeles 24               System 6.0.8 Fonts~        FONT 1560   -> duplicate of LosAngeles_24
+Mobile 18                    System 6.0.8 Fonts~        FONT 3090   -> duplicate of Mobile_18
+San Francisco 18             System 6.0.8 Fonts~        FONT 1042   -> duplicate of SanFrancisco_18
+Venice 14                    System 6.0.8 Fonts~        FONT 654    -> duplicate of Venice_14-v2
+Courier 9                    System 6.0.8 Fonts~        FONT 2825   -> duplicate of Courier_9
+Courier 14                   System 6.0.8 Fonts~        FONT 2830   -> duplicate of Courier_14
+Courier 24                   System 6.0.8 Fonts~        FONT 2840   -> duplicate of Courier_24
+Helvetica 9                  System 6.0.8 Fonts~        FONT 2697   -> duplicate of Helvetica_9
+Helvetica 14                 System 6.0.8 Fonts~        FONT 2702   -> duplicate of Helvetica_14
+Helvetica 18                 System 6.0.8 Fonts~        FONT 2706   -> duplicate of Helvetica_18
+Helvetica 24                 System 6.0.8 Fonts~        FONT 2712   -> duplicate of Helvetica_24
+Symbol 9                     System 6.0.8 Fonts~        FONT 2953   -> duplicate of Cairo_18-v2
+Symbol 14                    System 6.0.8 Fonts~        FONT 2958   -> duplicate of Symbol_14
+Symbol 18                    System 6.0.8 Fonts~        FONT 2962   -> duplicate of Cairo_18-v3
+Symbol 24                    System 6.0.8 Fonts~        FONT 2968   -> duplicate of Symbol_24
+Times 9                      System 6.0.8 Fonts~        FONT 2569   -> duplicate of Times_9
+Courier 18                   System 6.0.8 Fonts~        FONT 2834   -> duplicate of Courier_18
+Times 18                     System 6.0.8 Fonts~        FONT 2578   -> duplicate of Times_18
+Times 14                     System 6.0.8 Fonts~        FONT 2574   -> duplicate of Times_14
+Times 24                     System 6.0.8 Fonts~        FONT 2584   -> duplicate of Times_24
+Courier 10                   System 6.0.8 Fonts~        FONT 2826   -> duplicate of Courier_10
+Courier 12                   System 6.0.8 Fonts~        FONT 2828   -> duplicate of Courier_12
+Helvetica 10                 System 6.0.8 Fonts~        FONT 2698   -> duplicate of Helvetica_10
+Helvetica 12                 System 6.0.8 Fonts~        FONT 2700   -> duplicate of Helvetica_12
+Times 10                     System 6.0.8 Fonts~        FONT 2570   -> duplicate of Times_10
+Times 12                     System 6.0.8 Fonts~        FONT 2572   -> duplicate of Times_12
+New York 9                   System 6.0.8 Fonts~        FONT 265    -> duplicate of NewYork_9-v3
+New York 10                  System 6.0.8 Fonts~        FONT 266    -> duplicate of NewYork_10
+New York 12                  System 6.0.8 Fonts~        FONT 268    -> duplicate of NewYork_12
+New York 14                  System 6.0.8 Fonts~        FONT 270    -> duplicate of NewYork_14
+New York 18                  System 6.0.8 Fonts~        FONT 274    -> duplicate of NewYork_18
+New York 20                  System 6.0.8 Fonts~        FONT 276    -> duplicate of NewYork_20
+New York 24                  System 6.0.8 Fonts~        FONT 280    -> duplicate of NewYork_24
+Palatino 10                  System 6.0.8 Fonts~        FONT 2058   -> duplicate of Palatino_10
+Palatino 12                  System 6.0.8 Fonts~        FONT 2060   -> duplicate of Palatino_12
+Palatino 14                  System 6.0.8 Fonts~        FONT 2062   -> duplicate of Palatino_14
+Palatino 18                  System 6.0.8 Fonts~        FONT 2066   -> duplicate of Palatino_18
+Palatino 24                  System 6.0.8 Fonts~        FONT 2072   -> duplicate of Palatino_24
+Chicago 12                   System 6.0.8 Fonts~        FONT 12     -> duplicate of Chicago_12-v2
+Geneva 9                     System 6.0.8 Fonts~        FONT 393    -> duplicate of Geneva_9-v2
+Geneva 10                    System 6.0.8 Fonts~        FONT 394    -> duplicate of Geneva_10-v2
+Geneva 12                    System 6.0.8 Fonts~        FONT 396    -> duplicate of Geneva_12-v2
+Geneva 14                    System 6.0.8 Fonts~        FONT 398    -> duplicate of Geneva_14-v3
+Geneva 18                    System 6.0.8 Fonts~        FONT 402    -> duplicate of Geneva_18-v3
+Geneva 20                    System 6.0.8 Fonts~        FONT 404    -> duplicate of Geneva_20-v2
+Geneva 24                    System 6.0.8 Fonts~        FONT 408    -> duplicate of Geneva_24-v2
+Monaco 9                     System 6.0.8 Fonts~        FONT 521    -> duplicate of Monaco_9
+Monaco 12                    System 6.0.8 Fonts~        FONT 524    -> duplicate of Monaco_12-v2
+Symbol 10                    System 6.0.8 Fonts~        FONT 2954   -> duplicate of Symbol_10
+Symbol 12                    System 6.0.8 Fonts~        FONT 2956   -> duplicate of Symbol_12
+Times 9                      Times  9                   NFNT 2569   -> duplicate of Times_9
+Times 10                     Times 10                   NFNT 2570   -> duplicate of Times_10
+Times 12                     Times 12                   NFNT 2572   -> duplicate of Times_12
+Times 14                     Times 14                   NFNT 2574   -> duplicate of Times_14
+Times 18                     Times 18                   NFNT 2578   -> duplicate of Times_18
+Times 24                     Times 24                   NFNT 2584   -> duplicate of Times_24
+Cream 10                     Twiggy Fonts               FONT 650    -> Cream_10
+Cream 12                     Twiggy Fonts               FONT 652    -> Cream_12
+Gacha 8                      Twiggy Fonts               FONT 520    -> Gacha_8
+Gacha 10                     Twiggy Fonts               FONT 522    -> Gacha_10
+Gacha 12                     Twiggy Fonts               FONT 524    -> Gacha_12
+Helvetica 10                 Twiggy Fonts               FONT 394    -> Helvetica_10-v2
+Helvetica 12                 Twiggy Fonts               FONT 396    -> Helvetica_12-v2
+Helvetica 14                 Twiggy Fonts               FONT 398    -> Helvetica_14-v2
+Helvetica 18                 Twiggy Fonts               FONT 402    -> Helvetica_18-v2
+System 12                    Twiggy Fonts               FONT 12     -> System_12
+TimesRoman 10                Twiggy Fonts               FONT 266    -> TimesRoman_10
+TimesRoman 12                Twiggy Fonts               FONT 268    -> duplicate of TimesRoman_10
+TimesRoman 14                Twiggy Fonts               FONT 270    -> TimesRoman_14
+TimesRoman 16                Twiggy Fonts               FONT 272    -> TimesRoman_16
+Athens 18                    Athens                     NFNT 5484   -> duplicate of Athens_18
+Cairo 18                     Cairo                      NFNT 5484   -> duplicate of Cairo_18
+Chicacoal 18                 Chicacoal                  NFNT 5484   -> duplicate of Chicago_12
+Chicago 18                   Chicago                    NFNT 5484   -> Chicago_18
+Cream 18                     Cream                      NFNT 5484   -> duplicate of Cream_12
+London 18                    London                     NFNT 5484   -> duplicate of London_18
+Los Angeles 12               Los Angeles                NFNT 5478   -> duplicate of LosAngeles_12
+Los Angeles 24               Los Angeles                NFNT 5490   -> duplicate of LosAngeles_24
+Mobile 18                    Mobile                     NFNT 5484   -> duplicate of Mobile_18
+Monaco 18                    Monaco                     NFNT 5484   -> duplicate of Monaco_12
+Palatino 10                  Palatino                   NFNT 5476   -> Palatino_10-v2
+Palatino 12                  Palatino                   NFNT 5478   -> duplicate of Palatino_12
+Palatino 14                  Palatino                   NFNT 5480   -> duplicate of Palatino_14
+Palatino 18                  Palatino                   NFNT 5484   -> duplicate of Palatino_18
+Palatino 24                  Palatino                   NFNT 5490   -> duplicate of Palatino_24
+San Francisco 18             San Francisco              NFNT 5484   -> duplicate of SanFrancisco_18
+SwanSong 18                  SwanSong                   NFNT 5484   -> SwanSong_18
+System_16 18                 System_16                  NFNT 5484   -> duplicate of Chicago_12
+Taliesin 18                  Taliesin                   NFNT 5484   -> duplicate of Mobile_18
+Toronto-12 18                Toronto-12                 NFNT 5484   -> duplicate of Toronto_9
+Toronto-17 18                Toronto-17                 NFNT 5484   -> duplicate of Toronto_14
+Toronto_23 18                Toronto_23                 NFNT 5484   -> duplicate of Toronto_18
+Toronto_29 18                Toronto_29                 NFNT 5484   -> duplicate of Toronto_24
+Venice 14                    Venice                     NFNT 5480   -> duplicate of Venice_14-v2
