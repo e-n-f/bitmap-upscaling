@@ -31,7 +31,8 @@ as QuickDraw draws text. Nothing is smoothed or resampled.
 | `mac-classic/` | 94 distinct FONT/NFNT resources from `Macintosh OS 1-6/Originals/Originals.zip` in [JohnDDuncanIII/macfonts](https://github.com/JohnDDuncanIII/macfonts), at 1×. `INDEX.txt` maps every resource (suitcase, type and ID) to its specimen or notes it as an exact duplicate |
 | `sheets-1x/`, `sheets-2x/` | The same specimens combined into sheets by family, built by `tools/build_sheets.py` |
 | `lisa-screenshot-match/` | Twiggy Raw rendered against text cut from the Lisa screenshot (`inputs/lisa/lisaos31.png`), and a test showing the menu font is not Modern 12 with synthetic bold |
-| `tools/` | The parsers and specimen generators |
+| `phase-grid/` | Alignment test: Geneva 12 (System 0.85, FONT 396) with A–Z, a–z and 0–9 repeated in a 4×4 grid of blocks, one block for each combination of x%4 and y%4 of the line origins. The image has no labels; the `.json` lists every glyph's box with its x and y phase |
+| `tools/` | The parsers and specimen generators, plus `phase_grid.py` and `glyph_instances.py` (below) |
 
 ## Lisa source fonts (`.F` files)
 
@@ -83,6 +84,18 @@ files.
 python -I tools/specimen2.py OUT_DIR FONT.F|FONT.ttf ...        # Lisa .F files or 1X1Y Kreative TTFs
 python -I tools/macspecimens.py OUT_DIR __MACOSX/._suitcase ...  # AppleDouble resource forks
 python -I tools/build_sheets.py font-specimens font-specimens/sheets-1x font-specimens/sheets-2x
+python -I tools/phase_grid.py OUT_PREFIX --mac __MACOSX/._suitcase --res FONT:396     # or --font FILE
+```
+
+To compare how an upscaler draws the same character in different places, `glyph_instances.py` cuts every
+appearance of the chosen characters out of an upscaled copy of a specimen and lines them up beside the original glyph.
+The upscaled image only needs to be a uniformly scaled copy, at any scale.
+
+```
+# a phase grid: 16 appearances per character, ordered by x and y phase
+python -I tools/glyph_instances.py --layout phase-grid/Geneva_12_phase_grid.json --upscaled UPSCALED.png --chars "vxwk" --out OUT.png
+# an ordinary specimen (layout recomputed from the font)
+python -I tools/glyph_instances.py --mac __MACOSX/._suitcase --res FONT:396 --upscaled UPSCALED.png --chars "vxwk" --out OUT.png
 ```
 
 Requirements: numpy, Pillow and fontTools.
