@@ -2,8 +2,8 @@
 
 usage: python -I pick_typical.py --layout GRID.json --upscaled UPSCALED.png --out OUT_PREFIX [--tolerance 6]
 
-Each appearance is thresholded relative to its own background and ink levels (halfway between its 90th and 2nd
-percentile grey), which removes the upscaler's uneven background tint. Appearances are compared pairwise (differing
+Each appearance is thresholded relative to its own background and ink levels (halfway between its 90th-percentile
+grey and the typical grey of its clearly dark pixels), which removes the upscaler's uneven background tint. Appearances are compared pairwise (differing
 pixels as % of the character's ink). The chosen version is the one with the smallest median difference from the
 others: the most typical shape, which an occasional bad rendering cannot win. Appearances whose median difference is
 more than 1.6x the chosen one's are flagged as outliers. Writes:
@@ -48,18 +48,30 @@ def crop(b):
     return up[Y0:Y1, X0:X1]
 
 
+def levels(c):
+    """(background, ink) grey levels of a crop: background = 90th percentile; ink = 10th percentile of the pixels clearly
+    darker than the background, so even very sparse glyphs (an ellipsis's three dots) are measured correctly.
+    Returns None for a crop with no ink."""
+    bg = np.percentile(c, 90)
+    dark = c[c < bg - 40]
+    if dark.size < 4:
+        return None
+    return bg, np.percentile(dark, 10)
+
+
 def normalize(c):
     """Map this crop's background (90th percentile) to 255 and its ink (2nd percentile) to 0."""
-    bg, ink = np.percentile(c, 90), np.percentile(c, 2)
-    if bg - ink <= 40:
+    lv = levels(c)
+    if lv is None:
         return np.full(c.shape, 255.0)
+    bg, ink = lv
     return np.clip((c.astype(float) - ink) / (bg - ink), 0, 1) * 255
 
 
 def binarize(c):
-    """Threshold halfway between this crop's background (90th percentile) and ink (2nd percentile) levels."""
-    bg, ink = np.percentile(c, 90), np.percentile(c, 2)
-    return c < (bg + ink) / 2 if bg - ink > 40 else np.zeros(c.shape, bool)
+    """Threshold halfway between this crop's background and ink levels."""
+    lv = levels(c)
+    return c < sum(lv) / 2 if lv else np.zeros(c.shape, bool)
 
 
 chars = []

@@ -13,6 +13,10 @@ x and y phase wherever it is placed; "block" in the JSON is [x phase, y phase] a
 
 --ascii adds three lines with the other 32 printable ASCII characters (!"#$%&'()*+,- ./:;<=>?@[\\]^ _`{|}~).
 
+--macroman then adds every other inked glyph the font defines, 13 per line, in code order: Mac Roman 128-255 and
+any special glyphs below 32 (Chicago has the command key, check mark, diamond and Apple logo at 0x11-0x14). Each box
+in the JSON has "code" (the font's byte code) and "char" (its Unicode equivalent; codes below 32 are written <11> etc.).
+
 --letterspacing N adds N blank pixels between glyphs, and each glyph also advances past any ink that overhangs its
 normal advance width, so kerned glyphs no longer touch. Each box in the JSON then also has x0_unspaced and x1_unspaced:
 where that glyph sits on an unspaced line, so the spacing can be taken out again after upscaling.
@@ -32,6 +36,8 @@ ap.add_argument("out"); ap.add_argument("--font"); ap.add_argument("--mac"); ap.
 ap.add_argument("--letterspacing", type=int, default=0)
 ap.add_argument("--short-lines", action="store_true"); ap.add_argument("--square", action="store_true")
 ap.add_argument("--ascii", action="store_true", help="also include all printable ASCII punctuation and symbols")
+ap.add_argument("--macroman", action="store_true", help="also include every other inked glyph the font has (codes "
+                                                         "128-255 and special low codes such as Chicago's Apple logo)")
 ap.add_argument("--caption", help="text drawn in a bitmap font in a band above the grid (the grid moves down by a "
                                   "multiple of 4 px, so all phases are unchanged)")
 ap.add_argument("--caption-font", default=None, help="APPLEDOUBLE:TYPE:ID of the caption's bitmap font "
@@ -47,16 +53,31 @@ else:
     font = PixelTTF(a.font) if a.font.lower().endswith(".ttf") else BitmapFont(a.font)
     code = ord if a.font.lower().endswith(".ttf") else (lambda ch: ch.encode("mac_roman")[0])
 
+LOW_NAMES = {}                                    # codes below 32 have no Mac Roman meaning; label them <11> etc.
+
+
+def label(c):
+    if a.mac or not a.font.lower().endswith(".ttf"):
+        return f"<{c:02X}>" if c < 32 else bytes([c]).decode("mac_roman")
+    return chr(c)
+
+
+code_lines = [[code(c) for c in t] for t in LINES]
+if a.macroman:
+    used = {c for l in code_lines for c in l}
+    extra = [c for c in font.codes() if c not in used and c != 32 and (c < 32 or c >= 127)
+             and (g := font.glyph(c)) is not None and g[0].any()]
+    code_lines += [extra[i:i + 13] for i in range(0, len(extra), 13)]
 lines = []
-for t in LINES:
+for cl in code_lines:
     pos, plain = [], []
-    draw_line(font, [code(c) for c in t], positions=plain)                      # normal (unspaced) positions
-    lines.append((draw_line(font, [code(c) for c in t], gap=a.letterspacing, positions=pos), pos, t, plain))
+    draw_line(font, cl, positions=plain)                                        # normal (unspaced) positions
+    lines.append((draw_line(font, cl, gap=a.letterspacing, positions=pos), pos, cl, plain))
 line_w = max(l[0].shape[1] for l in lines)
 H = font.height
 pitch_y = -(-(H + 3) // 4) * 4                          # line pitch, a multiple of 4
 block_w = -(-(line_w + 12) // 4) * 4                    # block width and height, multiples of 4
-block_h = -(-(pitch_y * len(LINES) + 12) // 4) * 4
+block_h = -(-(pitch_y * len(lines) + 12) // 4) * 4
 margin = 8
 if a.square:      # columns of blocks giving the most nearly square image
     # any number of columns; the last row may have empty cells. Prefer squareness, then fewer empty cells.
@@ -77,8 +98,8 @@ for n in range(16):
     for li, (bits, pos, text, plain) in enumerate(lines):
         ox, oy = bx, by + li * pitch_y
         img[oy:oy + H, ox:ox + bits.shape[1]] |= bits
-        for (ch_code, x0, x1), (_, u0, u1), ch in zip(pos, plain, [ch for ch in text if font.glyph(code(ch)) is not None]):
-            boxes.append(dict(char=ch, x0=ox + x0, x1=ox + x1, y0=oy, y1=oy + H,
+        for (ch_code, x0, x1), (_, u0, u1) in zip(pos, plain):
+            boxes.append(dict(char=label(ch_code), code=ch_code, x0=ox + x0, x1=ox + x1, y0=oy, y1=oy + H,
                               x0_unspaced=ox + u0, x1_unspaced=ox + u1,
                               x_phase=ox % 4, y_phase=oy % 4, block=[xp, yp], cell=[c, r], line=li))
 if a.caption:

@@ -246,3 +246,30 @@ Round trips through the picker are still exact with these margins.
 
 Compared with the single winners, the averages have clean white backgrounds and slightly smoother edges, with the same
 shapes. On an exact (nearest-neighbour) upscale, both methods give identical results.
+
+### Full Mac character set grids
+
+`phase-grid/square-ls2-mac/` has grids like `square-ls2/` (2 px letterspacing, short lines, squarish, captioned), but
+with the font's full character set. That means the 94 printable ASCII characters plus every other inked glyph the font
+defines: Mac Roman 128–255, and Chicago's special glyphs at 0x11–0x14 (command key, check mark, diamond, Apple logo).
+There are 20 grids:
+
+- **Chicago:** 12
+- **Geneva:** 9, 10, 12, 14, 24
+- **New York:** 9, 10, 12, 14, 24
+- **Monaco:** 9, 12
+- **Venice:** 14
+- **Toronto:** 12, 24
+- **Los Angeles:** 12
+- **London, Athens, San Francisco:** 18
+
+The LaserWriter families (Times, Helvetica, Courier, Palatino) are left out, since good outline versions exist.
+Character counts range from 96 (London, San Francisco) to 186 (Chicago). Sources are in `SOURCES.txt`.
+
+Made with `phase_grid.py ... --ascii --macroman`. Each box in the JSON has `code` (the font's byte code) and `char`
+(its Unicode equivalent, or `<11>` etc. for codes below 32).
+
+The 24-point grids are large: Toronto 24 is 1656×1900, so a 6× upscale is about 10,000×11,000 px.
+
+The picking tools now measure each crop's ink level from its clearly dark pixels, so very sparse glyphs (like the
+ellipsis's three dots) are no longer mistaken for blank crops. Round trips through the picker are exact for all 20 grids.

@@ -1,0 +1,21 @@
+# name | AppleDouble file in Originals.zip's __MACOSX/ | resource
+Chicago_12|._System 6.0.8 Fonts_ff|FONT:12
+Geneva_9|._System 6.0.8 Fonts_ff|FONT:393
+Geneva_10|._System 6.0.8 Fonts_ff|FONT:394
+Geneva_12|._System 6.0.8 Fonts_ff|FONT:396
+Geneva_14|._System 6.0.8 Fonts_ff|FONT:398
+NewYork_9|._System 6.0.8 Fonts_ff|FONT:265
+NewYork_10|._LOSTFONTS|FONT:266
+NewYork_12|._LOSTFONTS|FONT:268
+NewYork_14|._LOSTFONTS|FONT:270
+Monaco_9|._System 6.0.8 Fonts_ff|FONT:521
+Monaco_12|._System 6.0.8 Fonts_ff|FONT:524
+Venice_14|._System 6.0.8 Fonts_ff|FONT:654
+Toronto_12|._LOSTFONTS|FONT:1164
+LosAngeles_12|._LOSTFONTS|FONT:1548
+London_18|._LOSTFONTS|FONT:786
+Athens_18|._LOSTFONTS|FONT:914
+SanFrancisco_18|._LOSTFONTS|FONT:1042
+Geneva_24|._System 6.0.8 Fonts_ff|FONT:408
+NewYork_24|._LOSTFONTS|FONT:280
+Toronto_24|._LOSTFONTS|FONT:1176

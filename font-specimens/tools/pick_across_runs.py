@@ -32,9 +32,20 @@ MX = a.margin_x if a.margin_x is not None else (1.0 if L.get("letterspacing", 0)
 MY = a.margin_y
 
 
+def levels(c):
+    """(background, ink) grey levels of a crop: background = 90th percentile; ink = 10th percentile of the pixels clearly
+    darker than the background, so even very sparse glyphs (an ellipsis's three dots) are measured correctly.
+    Returns None for a crop with no ink."""
+    bg = np.percentile(c, 90)
+    dark = c[c < bg - 40]
+    if dark.size < 4:
+        return None
+    return bg, np.percentile(dark, 10)
+
+
 def binarize(c):
-    bg, ink = np.percentile(c, 90), np.percentile(c, 2)
-    return c < (bg + ink) / 2 if bg - ink > 40 else np.zeros(c.shape, bool)
+    lv = levels(c)
+    return c < sum(lv) / 2 if lv else np.zeros(c.shape, bool)
 
 
 runs = []
