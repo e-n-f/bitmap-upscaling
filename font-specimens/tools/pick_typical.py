@@ -13,6 +13,11 @@ more than 1.6x the chosen one's are flagged as outliers. Writes:
                           the glyphs are in the grid's first block, at their unspaced positions if the grid was
                           made with --letterspacing
   OUT_PREFIX_best_grey.png  the same, using the chosen versions' original grey pixels
+  OUT_PREFIX_avg.png      the same lines rebuilt from averages instead of single versions: for each character, every
+                          appearance that is not an outlier (the chosen one included) is normalised to its own
+                          background (white) and ink (black) levels, the normalised appearances are averaged, and the
+                          average is thresholded at 50%. This smooths edge jitter and background tint.
+  OUT_PREFIX_avg_grey.png the averages before thresholding
 
 Crop margins: each appearance is cut out with --margin-y source pixels above and below the font's glyph rectangle
 (default 1.5; lines are always at least 3 px apart) and --margin-x to the left and right of its ink (default 1 for
@@ -43,6 +48,14 @@ def crop(b):
     return up[Y0:Y1, X0:X1]
 
 
+def normalize(c):
+    """Map this crop's background (90th percentile) to 255 and its ink (2nd percentile) to 0."""
+    bg, ink = np.percentile(c, 90), np.percentile(c, 2)
+    if bg - ink <= 40:
+        return np.full(c.shape, 255.0)
+    return np.clip((c.astype(float) - ink) / (bg - ink), 0, 1) * 255
+
+
 def binarize(c):
     """Threshold halfway between this crop's background (90th percentile) and ink (2nd percentile) levels."""
     bg, ink = np.percentile(c, 90), np.percentile(c, 2)
@@ -64,7 +77,9 @@ for ch in chars:
     med = np.array([np.median(np.delete(D[i], i)) for i in range(len(bits))])
     best = int(np.argmin(med))
     outlier = med > 1.6 * med[best]
-    picks[ch] = (inst, crops, bits, best)
+    inliers = [crops[i][:h, :w] for i in range(len(crops)) if not outlier[i]]
+    avg = np.mean([normalize(c) for c in inliers], axis=0).round().astype(np.uint8)
+    picks[ch] = (inst, crops, bits, best, avg, len(inliers))
     report.append((ch, med[best], int(outlier.sum())))
     pad = 6; H = max(c.shape[0] for c in crops) + 16
     row = Image.new("L", (sum(c.shape[1] + 2 * pad for c in crops) + 10, H), 255); d = ImageDraw.Draw(row); x = 5
@@ -88,15 +103,21 @@ xk = "x0_unspaced" if "x0_unspaced" in first[0] else "x0"          # take letter
 x_min = min(b[xk] for b in first) - MX - 2; y_min = min(b["y0"] for b in first) - MY - 2
 x_max = max(b[xk.replace("x0", "x1")] for b in first) + MX + 2; y_max = max(b["y1"] for b in first) + MY + 2
 shape = (int((y_max - y_min) * sy), int((x_max - x_min) * sx))
-bw = np.full(shape, 255, np.uint8); grey = np.full(shape, 255, np.uint8)
-for b in first:
-    inst, crops, bits, best = picks[b["char"]]
-    c = crops[best]; cb = np.where(binarize(c), 0, 255).astype(np.uint8)
-    X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
-    for canvas, img in ((bw, cb), (grey, c)):
+def rebuild(images, path):
+    canvas = np.full(shape, 255, np.uint8)
+    for b in first:
+        img = images[b["char"]]
+        X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
         region = canvas[Y0:Y0 + img.shape[0], X0:X0 + img.shape[1]]
         region[...] = np.minimum(region, img[:region.shape[0], :region.shape[1]])
-Image.fromarray(bw).save(a.out + "_best.png"); Image.fromarray(grey).save(a.out + "_best_grey.png")
+    Image.fromarray(canvas).save(path)
 
+
+rebuild({ch: np.where(binarize(p[1][p[3]]), 0, 255).astype(np.uint8) for ch, p in picks.items()}, a.out + "_best.png")
+rebuild({ch: p[1][p[3]] for ch, p in picks.items()}, a.out + "_best_grey.png")
+rebuild({ch: np.where(p[4] < 128, 0, 255).astype(np.uint8) for ch, p in picks.items()}, a.out + "_avg.png")
+rebuild({ch: p[4] for ch, p in picks.items()}, a.out + "_avg_grey.png")
+
+print(f"averages use {np.mean([p[5] for p in picks.values()]):.1f} appearances per character on average")
 print("chosen version's median difference from the other appearances (% of ink), and number of outliers:")
 print("  ".join(f"{c}:{m:.0f}" + (f"({n}x)" if n else "") for c, m, n in report))

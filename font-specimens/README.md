@@ -233,3 +233,16 @@ font's glyph rectangle.
   kerned neighbours stay out (`--margin-x`).
 
 Round trips through the picker are still exact with these margins.
+
+### Averaged picks
+
+`pick_typical.py` also writes `_avg.png` and `_avg_grey.png`. These rebuild the text from averages rather than single winners:
+
+- **Which versions:** every appearance of the character that is not an outlier, the winner included. That is about
+  13–14 of the 16 in Pruna's 6× upscales of Chicago 12 and Geneva 9.
+- **Normalising:** each appearance is first normalised to its own background (white) and ink (black) levels, which
+  removes the upscaler's uneven background grey.
+- **Averaging:** the normalised appearances are averaged (`_avg_grey.png`), then thresholded at 50% (`_avg.png`).
+
+Compared with the single winners, the averages have clean white backgrounds and slightly smoother edges, with the same
+shapes. On an exact (nearest-neighbour) upscale, both methods give identical results.
