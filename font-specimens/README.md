@@ -273,3 +273,18 @@ The 24-point grids are large: Toronto 24 is 1656×1900, so a 6× upscale is abou
 
 The picking tools now measure each crop's ink level from its clearly dark pixels, so very sparse glyphs (like the
 ellipsis's three dots) are no longer mistaken for blank crops. Round trips through the picker are exact for all 20 grids.
+
+### Picks for the full-character-set grids
+
+`phase-grid/pruna-picks-mac/` has `pick_typical.py` results for Pruna's 6× upscales of 12 of the full-character-set
+grids:
+
+- **Chicago:** 12
+- **Geneva:** 12, 24
+- **New York:** 12, 24
+- **Monaco:** 12
+- **Toronto:** 12, 24
+- **Venice:** 14
+- **London, Athens, San Francisco:** 18
+
+`contact_6x_avg_mac_a.png` and `_b.png` show the averaged rebuilds side by side.
