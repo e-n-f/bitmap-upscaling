@@ -221,3 +221,15 @@ each upscale to the size of every grid with the same aspect ratio, compares them
 ```
 python -I tools/identify_grid.py phase-grid/square-ls2 ~/Downloads/replicate-prediction-*.png --copy-to upscales/
 ```
+
+### Crop margins in the picking tools
+
+`pick_typical.py` and `pick_across_runs.py` cut each appearance out with a margin, because upscaled strokes can extend
+slightly beyond the source bitmap. For example, Pruna draws Chicago 12's "g" and "y" descenders a little below the
+font's glyph rectangle.
+
+- **Vertical:** 1.5 source px above and below the glyph rectangle (`--margin-y`). Lines are always at least 3 px apart.
+- **Horizontal:** 1 source px beyond the glyph's ink for grids with at least 2 px letterspacing, otherwise 0.5 px so
+  kerned neighbours stay out (`--margin-x`).
+
+Round trips through the picker are still exact with these margins.

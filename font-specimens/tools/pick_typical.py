@@ -13,6 +13,11 @@ more than 1.6x the chosen one's are flagged as outliers. Writes:
                           the glyphs are in the grid's first block, at their unspaced positions if the grid was
                           made with --letterspacing
   OUT_PREFIX_best_grey.png  the same, using the chosen versions' original grey pixels
+
+Crop margins: each appearance is cut out with --margin-y source pixels above and below the font's glyph rectangle
+(default 1.5; lines are always at least 3 px apart) and --margin-x to the left and right of its ink (default 1 for
+grids with at least 2 px letterspacing, else 0.5 so kerned neighbours stay out), because upscaled strokes can extend
+slightly beyond the source bitmap (e.g. Chicago's "g" and "y" descenders).
 """
 import argparse, json
 import numpy as np
@@ -21,17 +26,20 @@ from PIL import Image, ImageDraw
 ap = argparse.ArgumentParser()
 ap.add_argument("--chars", help="only show these characters in _choices.png (all are still chosen)")
 ap.add_argument("--layout", required=True); ap.add_argument("--upscaled", required=True); ap.add_argument("--out", required=True)
+ap.add_argument("--margin-x", type=float, default=None); ap.add_argument("--margin-y", type=float, default=1.5)
 a = ap.parse_args()
 
 L = json.load(open(a.layout))
+MX = a.margin_x if a.margin_x is not None else (1.0 if L.get("letterspacing", 0) >= 2 else 0.5)
+MY = a.margin_y
 up = np.array(Image.open(a.upscaled).convert("L"))
 sx, sy = up.shape[1] / L["width"], up.shape[0] / L["height"]
 
 
 def crop(b):
-    # the glyph's own columns plus half a source pixel each side, so kerned neighbours mostly stay out
-    X0, X1 = int(round((b["x0"] - 0.5) * sx)), int(round((b["x1"] + 0.5) * sx))
-    Y0, Y1 = int(round(b["y0"] * sy)), int(round(b["y1"] * sy))
+    # the glyph's own columns plus MX source px each side; its glyph rectangle plus MY above and below
+    X0, X1 = int(round((b["x0"] - MX) * sx)), int(round((b["x1"] + MX) * sx))
+    Y0, Y1 = int(round((b["y0"] - MY) * sy)), int(round((b["y1"] + MY) * sy))
     return up[Y0:Y1, X0:X1]
 
 
@@ -77,14 +85,14 @@ S.save(a.out + "_choices.png")
 # rebuild the first block's lines from the chosen versions
 first = [b for b in L["boxes"] if b["block"] == [0, 0]]
 xk = "x0_unspaced" if "x0_unspaced" in first[0] else "x0"          # take letterspacing back out when present
-x_min = min(b[xk] for b in first) - 2; y_min = min(b["y0"] for b in first) - 2
-x_max = max(b[xk.replace("x0", "x1")] for b in first) + 2; y_max = max(b["y1"] for b in first) + 2
+x_min = min(b[xk] for b in first) - MX - 2; y_min = min(b["y0"] for b in first) - MY - 2
+x_max = max(b[xk.replace("x0", "x1")] for b in first) + MX + 2; y_max = max(b["y1"] for b in first) + MY + 2
 shape = (int((y_max - y_min) * sy), int((x_max - x_min) * sx))
 bw = np.full(shape, 255, np.uint8); grey = np.full(shape, 255, np.uint8)
 for b in first:
     inst, crops, bits, best = picks[b["char"]]
     c = crops[best]; cb = np.where(binarize(c), 0, 255).astype(np.uint8)
-    X0, Y0 = int(round((b[xk] - 0.5 - x_min) * sx)), int(round((b["y0"] - y_min) * sy))
+    X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
     for canvas, img in ((bw, cb), (grey, c)):
         region = canvas[Y0:Y0 + img.shape[0], X0:X0 + img.shape[1]]
         region[...] = np.minimum(region, img[:region.shape[0], :region.shape[1]])

@@ -12,6 +12,11 @@ Writes:
   OUT_PREFIX_best.png     A-Z, a-z and 0-9 rebuilt at the largest scale from the chosen picks (thresholded), at
                           unspaced positions if the grid was made with --letterspacing
   OUT_PREFIX_best_grey.png  the same in grey
+
+Crop margins: each appearance is cut out with --margin-y source pixels above and below the font's glyph rectangle
+(default 1.5; lines are always at least 3 px apart) and --margin-x to the left and right of its ink (default 1 for
+grids with at least 2 px letterspacing, else 0.5 so kerned neighbours stay out), because upscaled strokes can extend
+slightly beyond the source bitmap (e.g. Chicago's "g" and "y" descenders).
 """
 import argparse, json
 import numpy as np
@@ -20,8 +25,11 @@ from PIL import Image, ImageDraw
 ap = argparse.ArgumentParser()
 ap.add_argument("upscaled", nargs="+"); ap.add_argument("--layout", required=True); ap.add_argument("--out", required=True)
 ap.add_argument("--force", default="", help="CHAR:SCALE pairs, comma-separated, e.g. g:6,d:8")
+ap.add_argument("--margin-x", type=float, default=None); ap.add_argument("--margin-y", type=float, default=1.5)
 a = ap.parse_args()
 L = json.load(open(a.layout))
+MX = a.margin_x if a.margin_x is not None else (1.0 if L.get("letterspacing", 0) >= 2 else 0.5)
+MY = a.margin_y
 
 
 def binarize(c):
@@ -39,8 +47,8 @@ target = max(runs, key=lambda r: r["sx"])
 
 
 def crop(r, b):
-    X0, X1 = int(round((b["x0"] - 0.5) * r["sx"])), int(round((b["x1"] + 0.5) * r["sx"]))
-    Y0, Y1 = int(round(b["y0"] * r["sy"])), int(round(b["y1"] * r["sy"]))
+    X0, X1 = int(round((b["x0"] - MX) * r["sx"])), int(round((b["x1"] + MX) * r["sx"]))
+    Y0, Y1 = int(round((b["y0"] - MY) * r["sy"])), int(round((b["y1"] + MY) * r["sy"]))
     return r["up"][Y0:Y1, X0:X1]
 
 
@@ -88,14 +96,14 @@ S.save(a.out + "_compare.png")
 
 first = [b for b in L["boxes"] if b["block"] == [0, 0]]
 xk = "x0_unspaced" if "x0_unspaced" in first[0] else "x0"
-x_min = min(b[xk] for b in first) - 2; y_min = min(b["y0"] for b in first) - 2
-x_max = max(b[xk.replace("x0", "x1")] for b in first) + 2; y_max = max(b["y1"] for b in first) + 2
+x_min = min(b[xk] for b in first) - MX - 2; y_min = min(b["y0"] for b in first) - MY - 2
+x_max = max(b[xk.replace("x0", "x1")] for b in first) + MX + 2; y_max = max(b["y1"] for b in first) + MY + 2
 sx, sy = target["sx"], target["sy"]
 shape = (int((y_max - y_min) * sy), int((x_max - x_min) * sx))
 bw = np.full(shape, 255, np.uint8); grey = np.full(shape, 255, np.uint8)
 for b in first:
     c = choice[b["char"]]["crop"]; cb = np.where(binarize(c), 0, 255).astype(np.uint8)
-    X0, Y0 = int(round((b[xk] - 0.5 - x_min) * sx)), int(round((b["y0"] - y_min) * sy))
+    X0, Y0 = int(round((b[xk] - MX - x_min) * sx)), int(round((b["y0"] - MY - y_min) * sy))
     for canvas, img in ((bw, cb), (grey, c)):
         region = canvas[Y0:Y0 + img.shape[0], X0:X0 + img.shape[1]]
         region[...] = np.minimum(region, img[:region.shape[0], :region.shape[1]])
