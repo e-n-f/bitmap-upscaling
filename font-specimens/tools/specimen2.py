@@ -79,21 +79,56 @@ def draw_line(font, codes, gap=0):
     return canvas[:, :pen + 4]
 
 
+SHUFFLE_SEEDS = (1, 2, 3)
+
+
+def shuffled_lines(font, seed, max_width):
+    """Every inked glyph in the font, in an order fixed by `seed`, split into word-like groups of 2-7 glyphs and
+    wrapped into lines no wider than `max_width` pixels."""
+    import random
+    rng = random.Random(seed)
+    codes = [c for c in font.codes() if c != 32 and (g := font.glyph(c)) is not None and g[0].any()]
+    rng.shuffle(codes)
+    words, i = [], 0
+    while i < len(codes):
+        k = rng.randint(2, 7); words.append(codes[i:i + k]); i += k
+    lines, cur = [], []
+    for w in words:
+        trial = cur + ([32] if cur else []) + w
+        if cur and draw_line(font, trial).shape[1] > max_width:
+            lines.append(cur); cur = list(w)
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
 def specimen(font):
     rows = [(None, draw_line(font, [ord(c) for c in t])) for t in ASCII_LINES]
     extra = [c for c in font.codes() if not (32 <= c <= 126)]
     for i in range(0, len(extra), 32):
         chunk = extra[i:i + 32]
         rows.append((f"{chunk[0]:04X}" if chunk[0] > 255 else f"{chunk[0]:02X}", draw_line(font, chunk, gap=2)))
+    # The whole character set again, shuffled with fixed seeds, so every glyph appears in several different contexts.
+    # Each of these lines gets 0-3 px of extra space above it (cycling), so line positions also vary modulo 4.
+    max_width = max(r.shape[1] for _, r in rows[:len(ASCII_LINES)])
+    k = 0
+    for seed in SHUFFLE_SEEDS:
+        for j, line in enumerate(shuffled_lines(font, seed, max_width)):
+            rows.append((f"s{seed}" if j == 0 else None, draw_line(font, line), k % 4)); k += 1
     return rows, len(extra)
 
 
 def to_image(title, rows):
     LW = 40
-    W = LW + max(r.shape[1] for _, r in rows)
+    W = LW + max(r[1].shape[1] for r in rows)
     parts = []
     hdr = Image.new("L", (W, 14), 215); ImageDraw.Draw(hdr).text((3, 1), title, fill=0); parts.append(np.array(hdr))
-    for lab, r in rows:
+    for row in rows:
+        lab, r = row[0], row[1]
+        if len(row) > 2 and row[2]:
+            parts.append(np.full((row[2], W), 255, np.uint8))     # extra space above this line
         line = np.full((r.shape[0] + 2, W), 255, np.uint8)
         line[1:-1, LW:LW + r.shape[1]] = np.where(r, 0, 255)
         if lab:

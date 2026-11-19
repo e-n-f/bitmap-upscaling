@@ -4,6 +4,12 @@ Pixel-exact specimens of Apple Lisa and early Macintosh bitmap fonts. Each speci
 
 - the ASCII alphabet, digits and punctuation, and a pangram
 - every glyph the font defines outside printable ASCII, 32 per row
+- the whole character set three more times (rows labelled `s1`, `s2` and `s3`):
+  - each pass shuffles every inked glyph in an order fixed by its seed (Python's `random.Random(1)`, `(2)` and `(3)`)
+  - glyphs are grouped into word-like clusters of 2-7 characters separated by spaces, and wrapped to the width of the pangram line
+  - each of these lines has 0, 1, 2 or 3 pixels of extra space above it, cycling, so line positions vary modulo 4
+  - every glyph therefore appears in several different neighbourhoods and vertical alignments, to show how
+    context-dependent upscalers treat the same glyph
 
 Row labels give the code of the row's first glyph. They are byte codes for Lisa `.F` and Mac FONT/NFNT fonts (0x80 and up is the Mac
 Roman layout), and Unicode code points for the Kreative TrueType fonts. Some fonts define empty glyphs at the low control
@@ -23,7 +29,7 @@ as QuickDraw draws text. Nothing is smoothed or resampled.
 | `lisa-source-fonts/` | All 46 bitmap fonts in `LISA_OS/FONTS/*.F` from the Lisa source code release, at 1× |
 | `lisa-kreative/` | Twiggy Raw (the Lisa system font) and Some Acronym Raw (the Lisa icon-label font), from Kreative Software's pixel-outline TrueType versions, at 1× |
 | `mac-classic/` | 94 distinct FONT/NFNT resources from `Macintosh OS 1-6/Originals/Originals.zip` in [JohnDDuncanIII/macfonts](https://github.com/JohnDDuncanIII/macfonts), at 1×. `INDEX.txt` maps every resource (suitcase, type and ID) to its specimen or notes it as an exact duplicate |
-| `sheets-1x/`, `sheets-2x/` | The same specimens combined into sheets by family |
+| `sheets-1x/`, `sheets-2x/` | The same specimens combined into sheets by family, built by `tools/build_sheets.py` |
 | `lisa-screenshot-match/` | Twiggy Raw rendered against text cut from the Lisa screenshot (`inputs/lisa/lisaos31.png`), and a test showing the menu font is not Modern 12 with synthetic bold |
 | `tools/` | The parsers and specimen generators |
 
@@ -76,6 +82,7 @@ files.
 ```
 python -I tools/specimen2.py OUT_DIR FONT.F|FONT.ttf ...        # Lisa .F files or 1X1Y Kreative TTFs
 python -I tools/macspecimens.py OUT_DIR __MACOSX/._suitcase ...  # AppleDouble resource forks
+python -I tools/build_sheets.py font-specimens font-specimens/sheets-1x font-specimens/sheets-2x
 ```
 
 Requirements: numpy, Pillow and fontTools.
