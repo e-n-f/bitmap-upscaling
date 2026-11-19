@@ -192,10 +192,15 @@ fidelity can't separate good renderings from bad ones; consistency can.
 
 Compared with the earlier grids:
 
+- **Full printable ASCII:** each block has eight short lines: A–M, N–Z, a–m, n–z, 0–9, and the 32 punctuation and
+  symbol characters in three lines. A few decorative fonts lack some characters, which are skipped: London 18
+  (`< > ^ ` ~`), San Francisco 18 (`^ } ~`), Los Angeles 12 (`~`) and Venice 14 (`@`).
 - **Letterspacing:** 2 px instead of 4.
-- **Shorter lines:** the text is in five lines (A–M, N–Z, a–m, n–z, 0–9).
 - **Squarer images:** the 16 blocks are arranged in whichever number of columns makes the image closest to square,
-  between 0.72:1 and 1.37:1. Some grids have a few empty cells.
+  between 0.88:1 and 1.19:1. Some grids have a few empty cells.
+- **Caption:** the top of each image has a caption in Geneva 9 bitmap pixels naming the grid, font, size, source
+  suitcase and resource, so an upscaled output can be identified by eye. The grid sits below it, moved down by a
+  multiple of 4 px, so the phases are unchanged.
 
 Each block keeps its own x and y phase wherever it is placed. In the JSON, `block` is `[x phase, y phase]` and `cell`
 is `[column, row]`. `pick_typical.py` and `pick_across_runs.py` work with these unchanged, and rebuild the text at
@@ -204,7 +209,15 @@ normal spacing.
 Made with:
 
 ```
-python -I tools/phase_grid.py OUT_PREFIX --mac __MACOSX/._suitcase --res FONT:id --letterspacing 2 --short-lines --square
+python -I tools/phase_grid.py OUT_PREFIX --mac __MACOSX/._suitcase --res FONT:id --letterspacing 2 --short-lines --square --ascii --caption "TEXT"
 ```
 
-Without `--short-lines` and `--square`, `phase_grid.py` produces exactly the original layouts.
+Without `--short-lines`, `--square`, `--ascii` and `--caption`, `phase_grid.py` produces exactly the original layouts.
+
+To find out which grid an upscaled image belongs to, whatever its filename, run `identify_grid.py`. It shrinks
+each upscale to the size of every grid with the same aspect ratio, compares them, and reports the best match and the scale.
+`--copy-to` also copies each upscale to `<grid name>_<scale>x.png`, ready for the picking tools:
+
+```
+python -I tools/identify_grid.py phase-grid/square-ls2 ~/Downloads/replicate-prediction-*.png --copy-to upscales/
+```

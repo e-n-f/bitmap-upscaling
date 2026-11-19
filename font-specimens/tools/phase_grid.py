@@ -11,6 +11,8 @@ There are no labels in the image (labels might influence an upscaler); the JSON 
 in whichever number of columns (1 to 16; the last row may have empty cells) makes the whole image closest to square. Each block keeps its own
 x and y phase wherever it is placed; "block" in the JSON is [x phase, y phase] and "cell" is [column, row].
 
+--ascii adds three lines with the other 32 printable ASCII characters (!"#$%&'()*+,- ./:;<=>?@[\\]^ _`{|}~).
+
 --letterspacing N adds N blank pixels between glyphs, and each glyph also advances past any ink that overhangs its
 normal advance width, so kerned glyphs no longer touch. Each box in the JSON then also has x0_unspaced and x1_unspaced:
 where that glyph sits on an unspaced line, so the spacing can be taken out again after upscaling.
@@ -23,13 +25,19 @@ from specimen2 import draw_line, BitmapFont, PixelTTF
 
 LONG_LINES = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", "0123456789"]
 SHORT_LINES = ["ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "abcdefghijklm", "nopqrstuvwxyz", "0123456789"]
+ASCII_PUNCT_LINES = ["!\"#$%&'()*+,-", "./:;<=>?@[\\]^", "_`{|}~"]       # the other 32 printable ASCII characters
 
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("--font"); ap.add_argument("--mac"); ap.add_argument("--res")
 ap.add_argument("--letterspacing", type=int, default=0)
 ap.add_argument("--short-lines", action="store_true"); ap.add_argument("--square", action="store_true")
+ap.add_argument("--ascii", action="store_true", help="also include all printable ASCII punctuation and symbols")
+ap.add_argument("--caption", help="text drawn in a bitmap font in a band above the grid (the grid moves down by a "
+                                  "multiple of 4 px, so all phases are unchanged)")
+ap.add_argument("--caption-font", default=None, help="APPLEDOUBLE:TYPE:ID of the caption's bitmap font "
+                                                      "(default: Geneva 9 from the same suitcase as --mac, else the grid's font)")
 a = ap.parse_args()
-LINES = SHORT_LINES if a.short_lines else LONG_LINES
+LINES = (SHORT_LINES if a.short_lines else LONG_LINES) + (ASCII_PUNCT_LINES if a.ascii else [])
 if a.mac:
     from macspecimens import collect, QDFont
     rtype, rid = a.res.split(":")
@@ -73,7 +81,27 @@ for n in range(16):
             boxes.append(dict(char=ch, x0=ox + x0, x1=ox + x1, y0=oy, y1=oy + H,
                               x0_unspaced=ox + u0, x1_unspaced=ox + u1,
                               x_phase=ox % 4, y_phase=oy % 4, block=[xp, yp], cell=[c, r], line=li))
+if a.caption:
+    cfont = None
+    if a.caption_font:
+        f_, t_, i_ = a.caption_font.rsplit(":", 2)
+        cfont = next(QDFont(c[6]) for c in collect(f_) if c[1] == t_ and c[2] == int(i_))
+    elif a.mac:
+        cfont = next((QDFont(c[6]) for c in collect(a.mac) if c[1] == "FONT" and c[2] == 393), None)   # Geneva 9
+    cfont = cfont or font
+    cap = draw_line(cfont, [ch.encode("mac_roman", "replace")[0] for ch in a.caption])
+    band = -(-(cfont.height + 2 * margin) // 4) * 4            # multiple of 4, so phases are unchanged
+    if cap.shape[1] + 2 * margin > W:                          # widen the canvas on the right if the caption needs it
+        W2 = -(-(cap.shape[1] + 2 * margin) // 4) * 4
+        img = np.hstack([img, np.zeros((Hh, W2 - W), bool)]); W = W2
+    top = np.zeros((band, W), bool)
+    top[margin:margin + cfont.height, margin:margin + cap.shape[1]] = cap[:, :W - margin]
+    img = np.vstack([top, img]); Hh += band
+    for b in boxes:
+        b["y0"] += band; b["y1"] += band
+        assert b["y0"] % 4 == b["y_phase"]
 Image.fromarray(np.where(img, 0, 255).astype(np.uint8)).convert("1").save(a.out + ".png")
-json.dump(dict(width=W, height=Hh, glyph_height=H, letterspacing=a.letterspacing, boxes=boxes), open(a.out + ".json", "w"))
+json.dump(dict(width=W, height=Hh, glyph_height=H, letterspacing=a.letterspacing, caption=a.caption or "", boxes=boxes),
+          open(a.out + ".json", "w"))
 print(f"{a.out}.png {W}x{Hh}; line origins have x%4 in {sorted({b['x_phase'] for b in boxes})} and "
       f"y%4 in {sorted({b['y_phase'] for b in boxes})}; {len(boxes)} glyphs")
