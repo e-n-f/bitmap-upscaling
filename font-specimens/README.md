@@ -389,3 +389,9 @@ mostly the 24-point design. To give the 12 point more influence there are three 
 - `NewYork_12_24_eqblur_*`: both sizes blurred by the same 2 px at 24-point scale (`--blur-per 12=1,24=2`), weighted equally.
 
 `composite_sizes.py` gains `--weights` and `--blur-per`, and now always writes the `_composite_grey_1x.png` reduction.
+
+In Pruna's upscales of those, the 2:1 version stayed solid, but the 3:1 and equal-blur versions came out looking
+outlined (an inline design). The blurred 12-point contribution never reaches full black, so stroke centres stay grey
+while the 24-point edges are dark. `NewYork_12_24_{w2,w3,eqblur}_levels_*` apply a levels adjustment to fix that: ink
+coverage at or below 10% becomes white, at or above 60% becomes black, and values in between are stretched linearly.
+That makes stroke centres solid and drops the faint halo, at the cost of somewhat heavier letters.
