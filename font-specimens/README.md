@@ -366,3 +366,5 @@ sigma 1 in its own pixels before mapping and averaging. That is a strong blur fo
 soft blobs) and a slight one for 24 and 36, so the large sizes dominate the detail. The grey composite is the useful
 output. Its hairlines and serifs are too faint for a clean threshold, so `_composite.png` is thresholded at 30%, not
 50%, and is heavier than the design.
+
+`size-composite/Geneva_blur1_*` is the Geneva composite (9–24 onto 24 point) with the same sigma-1 blur.
