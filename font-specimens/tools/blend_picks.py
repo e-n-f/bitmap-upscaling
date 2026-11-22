@@ -24,6 +24,10 @@ Image.MAX_IMAGE_PIXELS = None
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("sizes", nargs="+"); ap.add_argument("--ss", type=int, default=6)
 ap.add_argument("--threshold", type=float, default=0.5)
+ap.add_argument("--align", choices=("edges", "centers"), default="edges",
+                help="edges: align the bitmap fonts' ink edges and reference lines (descender, baseline, x-height, cap height). "
+                     "centers: align stroke centres measured on the picks: each reference line moved inward by half that "
+                     "size's horizontal stroke thickness, and each glyph's outer edges by half its stem width")
 ap.add_argument("--mode", choices=("grey", "sdf"), default="grey",
                 help="grey: weighted average of the mapped picks' grey coverage, no thresholding (default). "
                      "sdf: threshold each pick and average signed distance fields (crisp, but loses thin strokes)")
@@ -38,7 +42,8 @@ for spec in a.sizes:
     f = next(QDFont(c[6]) for c in collect(path) if c[1] == t and c[2] == int(i))
     J = json.load(open(prefix + "_glyphs.json"))
     cov = 1 - np.array(Image.open(prefix + "_avg_grey.png").convert("L")).astype(np.float32) / 255
-    sizes.append(dict(label=label, font=f, glyphs={g["code"]: g for g in J["glyphs"]}, cov=cov, k=J["scale"][0], w=weight))
+    sizes.append(dict(label=label, font=f, glyphs={g["code"]: g for g in J["glyphs"]}, cov=cov, k=J["scale"][0], w=weight,
+                      prefix=prefix))
 
 
 def ink_edges(f, code):
@@ -53,12 +58,30 @@ def refs(f):
     return [ink_edges(f, ord("p"))["bottom"], 0, ink_edges(f, ord("x"))["top"], ink_edges(f, ord("H"))["top"]]
 
 
-T = sizes[-1]["font"]; tref = refs(T)
+T = sizes[-1]["font"]
+if a.align == "centers":
+    from pick_metrics import PickMetrics
+    for s in sizes:
+        pm = PickMetrics(s["prefix"]); r = pm.refs(); h = pm.bar(); v = pm.stem()
+        s["pm"], s["stem"] = pm, v
+        s["cref"] = [r[0] + h / 2, r[1] + h / 2, r[2] - h / 2, r[3] - h / 2]
+        print(f"  {s['label']}: stem {v:.2f}, horizontal stroke {h:.2f}, stroke-centre lines {[round(x, 2) for x in s['cref']]} (source px)")
+    tref = sizes[-1]["cref"]
+else:
+    tref = refs(T)
 for s in sizes:
-    sref = refs(s["font"])
+    sref = s["cref"] if a.align == "centers" else refs(s["font"])
     k_lo = (sref[1] - sref[0]) / (tref[1] - tref[0]); k_hi = (sref[3] - sref[2]) / (tref[3] - tref[2])
     s["inv"] = (lambda sref, k_lo, k_hi: lambda ty: np.where(ty < tref[0], sref[0] + (ty - tref[0]) * k_lo,
                 np.where(ty > tref[3], sref[3] + (ty - tref[3]) * k_hi, np.interp(ty, tref, sref))))(sref, k_lo, k_hi)
+
+
+def centre_box(s, code):
+    """left/right outer-stroke centres of a glyph on its pick (source px), or its edges for very narrow glyphs"""
+    e = s["pm"].edges(code); v = s["stem"]
+    if e["right"] - e["left"] < 2 * v:
+        return dict(left=e["left"], right=e["right"])
+    return dict(left=e["left"] + v / 2, right=e["right"] - v / 2)
 
 
 def sample_pick(s, code, TX, TY, tb):
@@ -66,6 +89,8 @@ def sample_pick(s, code, TX, TY, tb):
     g = s["glyphs"].get(code); sb = ink_edges(s["font"], code)
     if g is None or sb is None or g.get("origin") is None:
         return None
+    if a.align == "centers":
+        sb = centre_box(s, code); tb = centre_box(sizes[-1], code)
     sx = sb["left"] + (TX - tb["left"]) * (sb["right"] - sb["left"]) / (tb["right"] - tb["left"])   # source px from pen
     sy = s["inv"](TY)                                                                               # source px up
     ox, oy = g["origin"]; k = s["k"]

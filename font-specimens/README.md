@@ -422,3 +422,14 @@ after upscaling. `blend_picks.py` now defaults to `--mode grey`: the mapped pick
 given weights, with no thresholding. `NewYork_12_24_pickgrey_{eq,w2}` are the equal and 2:1 (12-weighted) grey blends,
 at 6× and reduced to 24-point size (`_1x`). Every stroke survives; there are soft grey fringes only where the two
 designs differ.
+
+**Stroke-centre alignment** (`blend_picks.py --align centers`, `NewYork_12_24_pickgrey_centres_{eq,w2}`). Measured on
+Pruna's picks, New York 12's horizontal strokes are much heavier relative to the letter than New York 24's (9.6% of the
+cap height against 5.6%), while the stems are similar (about 10–11%). With edges aligned, the heavier 12-point strokes
+share the 24-point strokes' outer edges and extend inward, which looks like an inset. So `--align centers`:
+
+- **Measures** each size's stem width and horizontal stroke thickness on its picks (`pick_metrics.py`, using each
+  glyph's own `ink_avg` box so neighbours don't interfere).
+- **Vertical knots:** the centres of the horizontal strokes at the descender, baseline, x-height and cap height.
+- **Horizontal mapping:** each glyph's outer stroke centres, its pick ink edges moved inward by half a stem. Glyphs
+  narrower than two stems use their edges.
