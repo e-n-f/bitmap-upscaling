@@ -360,3 +360,9 @@ python -I tools/composite_sizes.py OUT_PREFIX 9=__MACOSX/._suitcase:FONT:265 ...
 point. Geneva splits into two designs: a heavy one at 9–12 point (u-shaped "y", short "Q" tail) and a light one at
 14–24 point (v-shaped "y", long diagonal "Q" tail). Where the two groups draw a letter with a different structure, the
 raster average is a double image ("y", "Q"). Where they share a structure, it averages cleanly.
+
+`size-composite/NewYork_blur1_*` is the New York composite with `--blur 1`: each size's bitmap is blurred with a Gaussian of
+sigma 1 in its own pixels before mapping and averaging. That is a strong blur for the small sizes (9 and 10 point become
+soft blobs) and a slight one for 24 and 36, so the large sizes dominate the detail. The grey composite is the useful
+output. Its hairlines and serifs are too faint for a clean threshold, so `_composite.png` is thresholded at 30%, not
+50%, and is heavier than the design.
