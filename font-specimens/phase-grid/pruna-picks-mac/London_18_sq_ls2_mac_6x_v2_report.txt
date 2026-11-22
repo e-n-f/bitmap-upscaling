@@ -1,0 +1,3 @@
+averages use 15.6 appearances per character on average
+chosen version's median difference from the other appearances (% of ink), and number of outliers:
+A:21  B:17  C:9(2x)  D:19(4x)  E:11  F:10  G:10  H:14  I:13  J:13  K:17  L:17  M:16  N:16  O:11  P:15  Q:12  R:13  S:12  T:10  U:13  V:17  W:12  X:14  Y:17  Z:18  a:14  b:9  c:12  d:12  e:12  f:9  g:10  h:11  i:14  j:11  k:13  l:11(1x)  m:9  n:10  o:9(1x)  p:10  q:10  r:11  s:12(1x)  t:11  u:9  v:10(1x)  w:11  x:14  y:14  z:20  0:7(1x)  1:9  2:12  3:15  4:9  5:9  6:9  7:7  8:10  9:9  !:17  ":18  #:8  $:15  %:10  &:12  ':26  (:6  ):6  *:14(5x)  +:9  ,:30  -:10(1x)  .:19  /:8(3x)  ::18  ;:20  =:9  ?:15  @:9  [:5(1x)  \:7(1x)  ]:5(2x)  _:8(7x)  {:11  |:17  }:13  –:12  —:9  “:23(2x)  ”:23  ‘:28(2x)  ’:27  Ÿ:24

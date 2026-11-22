@@ -26,7 +26,8 @@ from PIL import Image, ImageDraw
 
 ap = argparse.ArgumentParser()
 ap.add_argument("upscaled", nargs="+"); ap.add_argument("--layout", required=True); ap.add_argument("--out", required=True)
-ap.add_argument("--force", default="", help="CHAR:SCALE pairs, comma-separated, e.g. g:6,d:8")
+ap.add_argument("--force", default="", help="CHAR:RUN pairs, comma-separated, e.g. g:6,d:8 (RUN is a scale, or a --names label)")
+ap.add_argument("--names", default="", help="comma-separated labels for the upscales, in order (default: their scales, e.g. 6x)")
 ap.add_argument("--margin-x", type=float, default=None); ap.add_argument("--margin-y", type=float, default=1.5)
 a = ap.parse_args()
 L = json.load(open(a.layout))
@@ -55,6 +56,9 @@ for path in a.upscaled:
     up = np.array(Image.open(path).convert("L"))
     sx, sy = up.shape[1] / L["width"], up.shape[0] / L["height"]
     runs.append(dict(path=path, up=up, sx=sx, sy=sy, scale=int(round(sx))))
+names = [n.strip() for n in a.names.split(",")] if a.names else None
+for i, r in enumerate(runs):
+    r["name"] = names[i] if names else f"{r['scale']}x"
 runs.sort(key=lambda r: r["scale"])
 target = max(runs, key=lambda r: r["sx"])
 
@@ -69,7 +73,7 @@ chars = []
 for b in L["boxes"]:
     if b["char"] not in chars:
         chars.append(b["char"])
-force = {p.split(":")[0]: int(p.split(":")[1]) for p in a.force.split(",") if p}
+force = {p.rsplit(":", 1)[0]: p.rsplit(":", 1)[1] for p in a.force.split(",") if p}
 
 choice = {}; rows = []
 for ch in chars:
@@ -87,7 +91,7 @@ for ch in chars:
         c = crops[i]; tw = int(round(c.shape[1] * target["sx"] / r["sx"])); th = int(round(c.shape[0] * target["sy"] / r["sy"]))
         cands.append(dict(run=r, med=float(med[i]), crop=np.array(Image.fromarray(c).resize((tw, th), Image.BICUBIC))))
     if ch in force:
-        best = next(k for k, c in enumerate(cands) if c["run"]["scale"] == force[ch])
+        best = next(k for k, c in enumerate(cands) if force[ch] in (c["run"]["name"], str(c["run"]["scale"]), f"{c['run']['scale']}x"))
     else:
         best = int(np.argmin([c["med"] for c in cands]))
     choice[ch] = cands[best]
@@ -97,7 +101,7 @@ for ch in chars:
         row.paste(Image.fromarray(np.where(binarize(c["crop"]), 0, 255).astype(np.uint8)), (x + pad, 0))
         if k == best:
             d.rectangle([x + pad - 3, 0, x + pad + c["crop"].shape[1] + 2, c["crop"].shape[0] + 1], outline=0, width=3)
-        d.text((x + pad, H - 14), f"{c['run']['scale']}x {c['med']:.0f}" + ("*" if ch in force and k == best else ""),
+        d.text((x + pad, H - 14), f"{c['run']['name']} {c['med']:.0f}" + ("*" if ch in force and k == best else ""),
                fill=0 if k == best else 140)
         x += c["crop"].shape[1] + 2 * pad
     rows.append(row)
@@ -153,7 +157,7 @@ def write_glyphs_json(path, chosen, chosen_avg, source_scale, extra=None):
 
 write_glyphs_json(a.out + "_glyphs.json", {ch: choice[ch]["crop"] for ch in chars},
                   {ch: np.where(binarize(choice[ch]["crop"]), 0, 255).astype(np.uint8) for ch in chars}, None,
-                  {ch: dict(scale_used=choice[ch]["run"]["scale"], median_difference_pct=round(choice[ch]["med"], 1)) for ch in chars})
+                  {ch: dict(run_used=choice[ch]["run"]["name"], scale_used=choice[ch]["run"]["scale"], median_difference_pct=round(choice[ch]["med"], 1)) for ch in chars})
 from collections import Counter
-print("scale used per character:", " ".join(f"{ch}:{choice[ch]['run']['scale']}" for ch in chars))
-print("count by scale:", dict(Counter(choice[ch]["run"]["scale"] for ch in chars)))
+print("run used per character:", " ".join(f"{ch}:{choice[ch]['run']['name']}" for ch in chars))
+print("count by run:", dict(Counter(choice[ch]["run"]["name"] for ch in chars)))

@@ -314,3 +314,17 @@ To support this, the grids' layout files now also record the font's `ascent` and
 correction. In the earlier ASCII grids for Los Angeles 12 and San Francisco 18, an empty backquote glyph had shifted
 the labels of the last few characters on the last line by one. Boxes are now labelled by the glyph's own code, and
 all picks were re-run.
+
+### Second runs, and combining runs
+
+`pruna-picks-mac/` also has second Pruna 6× runs of six fonts. Some were made from Gaussian-processed input (`_gauss`:
+New York 24, Geneva 24, Chicago 12) and some are plain new runs (`_v2`: London 18, Geneva 12, New York 12). Each has the
+usual `pick_typical.py` outputs.
+
+`_combined_*` merges each font's earlier and new runs with `pick_across_runs.py --names earlier,<tag>`: every
+character comes from whichever run's 16 appearances agree more closely. `_combined_glyphs.json` records the run used for
+each character (`run_used`). `compare_<font>_<tag>.png` shows the earlier vote, the new vote and the combination side by
+side.
+
+`pick_across_runs.py` now accepts `--names` to label upscales that share a scale. `--force` takes those labels
+(e.g. `--force "=:earlier,g:v2"`).
