@@ -7,10 +7,11 @@ The last size listed is the target, whose metrics and advance widths are used.
 
 Each size's picked glyph is mapped onto the target glyph as in composite_sizes.py: vertically piecewise-linearly
 through descender, baseline, x-height and cap height; horizontally by stretching the source font's ink extent onto the
-target's. The mapped glyph is thresholded at --threshold to get its shape, and the shapes are blended by averaging
-their signed distance fields (weighted), so the result is one crisp outline between them. Writes:
-  OUT_PREFIX_blend.png     the blended outlines at --ss times the target size (black on white)
-  OUT_PREFIX_blend_1x.png  reduced to the target size by averaging SS x SS blocks: crisp antialiased text
+target's. By default (--mode grey) the mapped picks' grey coverage is averaged with the given weights. With --mode sdf, each
+mapped glyph is thresholded at --threshold and the signed distance fields are averaged instead, for one crisp outline;
+that loses thin hairlines and serifs. Writes:
+  OUT_PREFIX_blend.png     the blend at --ss times the target size (grey, or black and white with --mode sdf)
+  OUT_PREFIX_blend_1x.png  reduced to the target size by averaging SS x SS blocks
 """
 import argparse, json, os, sys
 import numpy as np
@@ -23,6 +24,9 @@ Image.MAX_IMAGE_PIXELS = None
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("sizes", nargs="+"); ap.add_argument("--ss", type=int, default=6)
 ap.add_argument("--threshold", type=float, default=0.5)
+ap.add_argument("--mode", choices=("grey", "sdf"), default="grey",
+                help="grey: weighted average of the mapped picks' grey coverage, no thresholding (default). "
+                     "sdf: threshold each pick and average signed distance fields (crisp, but loses thin strokes)")
 a = ap.parse_args()
 
 sizes = []
@@ -101,18 +105,23 @@ for l in lines:
             cv = sample_pick(s, code, TX, TY, tb)
             if cv is None:
                 continue
-            inside = cv >= a.threshold
-            sd.append(edt(inside) - edt(~inside)); ws.append(s["w"])
+            if a.mode == "sdf":
+                inside = cv >= a.threshold
+                sd.append(edt(inside) - edt(~inside))
+            else:
+                sd.append(cv)
+            ws.append(s["w"])
         w = np.array(ws) / sum(ws)
-        shape = np.tensordot(w, np.array(sd), axes=1) > 0
+        shape = (np.tensordot(w, np.array(sd), axes=1) > 0) if a.mode == "sdf" else np.tensordot(w, np.array(sd), axes=1)
         parts.append((pen + x_lo, shape)); pen += adv
-    W = (pen + 8) * SS; canvas = np.zeros((line_h * SS, W), bool)
+    W = (pen + 8) * SS; canvas = np.zeros((line_h * SS, W), np.float32)
     for x0, shape in parts:
-        X = int(round(x0 * SS)); canvas[:, X:X + shape.shape[1]] |= shape[:, :W - X]
+        X = int(round(x0 * SS)); w_ = shape.shape[1]
+        canvas[:, X:X + w_] = np.maximum(canvas[:, X:X + w_], shape[:, :W - X].astype(np.float32))
     out_lines.append(canvas)
 Wm = max(c.shape[1] for c in out_lines)
 img = np.vstack([np.pad(c, ((0, 0), (0, Wm - c.shape[1]))) for c in out_lines])
-im = Image.fromarray(np.where(img, 0, 255).astype(np.uint8)); im.save(a.out + "_blend.png")
+im = Image.fromarray((255 - np.clip(img, 0, 1) * 255).round().astype(np.uint8)); im.save(a.out + "_blend.png")
 h, w = img.shape[0] // SS * SS, img.shape[1] // SS * SS
 im.crop((0, 0, w, h)).resize((w // SS, h // SS), Image.BOX).save(a.out + "_blend_1x.png")
 print(f"{sum(len(l) for l in lines)} glyphs; sizes {[s['label'] + ' x' + str(s['w']) for s in sizes]}; {img.shape[1]}x{img.shape[0]} -> {w // SS}x{h // SS}")

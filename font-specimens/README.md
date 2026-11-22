@@ -416,3 +416,9 @@ python -I tools/blend_picks.py OUT_PREFIX \
     12=__MACOSX/._LOSTFONTS:FONT:268=phase-grid/pruna-picks-mac/NewYork_12_sq_ls2_mac_6x=2 \
     24=__MACOSX/._LOSTFONTS:FONT:280=phase-grid/pruna-picks-mac/NewYork_24_sq_ls2_mac_6x=1
 ```
+
+The thresholded outline blends (`pickblend_*`) have many dropouts in thin hairlines and serifs, both as they are and
+after upscaling. `blend_picks.py` now defaults to `--mode grey`: the mapped picks' grey coverage is averaged with the
+given weights, with no thresholding. `NewYork_12_24_pickgrey_{eq,w2}` are the equal and 2:1 (12-weighted) grey blends,
+at 6× and reduced to 24-point size (`_1x`). Every stroke survives; there are soft grey fringes only where the two
+designs differ.
