@@ -355,3 +355,8 @@ not proportions. 9 and 10 point are heavy and blocky, 12 and 14 light and open, 
 ```
 python -I tools/composite_sizes.py OUT_PREFIX 9=__MACOSX/._suitcase:FONT:265 ... 36=__MACOSX/._LOSTFONTS:FONT:292
 ```
+
+`size-composite/Geneva_*` is the same composite for Geneva 9, 10, 12, 14, 18, 20 and 24 (System 6.0.8), mapped onto 24
+point. Geneva splits into two designs: a heavy one at 9–12 point (u-shaped "y", short "Q" tail) and a light one at
+14–24 point (v-shaped "y", long diagonal "Q" tail). Where the two groups draw a letter with a different structure, the
+raster average is a double image ("y", "Q"). Where they share a structure, it averages cleanly.
