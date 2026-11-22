@@ -433,3 +433,15 @@ share the 24-point strokes' outer edges and extend inward, which looks like an i
 - **Vertical knots:** the centres of the horizontal strokes at the descender, baseline, x-height and cap height.
 - **Horizontal mapping:** each glyph's outer stroke centres, its pick ink edges moved inward by half a stem. Glyphs
   narrower than two stems use their edges.
+
+`size-composite/NewYork_12_on_24_aligned.png` is a Pruna 6× upscale of the New York 12 full-character-set rebuild
+(`replicate-prediction-0qdfnd9yesrmy0d20hz9wa3vg8`) with every glyph moved onto the matching glyph of a Pruna 3× upscale
+of the New York 24 rebuild (`replicate-prediction-26kqda4re1rmy0d20hzbka6yx0`). The image is the same size as the 24-point
+image, 4050×8082, for side-by-side or layered comparison.
+
+- **Scale:** both are 324 px to the cap height, so there is no scaling. Each 12-point glyph is only translated.
+- **Placement:** each 12-point glyph is centred on the 24-point glyph's ink box horizontally and sits on its baseline.
+- **Background:** each 12-point crop's background was brightened to white. Ink greys are unchanged.
+
+`NewYork_12_on_24_overlay.png` overlays the two: ink only in the 12 point is blue, ink only in the 24 point is red,
+ink in both is black.
