@@ -395,3 +395,24 @@ outlined (an inline design). The blurred 12-point contribution never reaches ful
 while the 24-point edges are dark. `NewYork_12_24_{w2,w3,eqblur}_levels_*` apply a levels adjustment to fix that: ink
 coverage at or below 10% becomes white, at or above 60% becomes black, and values in between are stretched linearly.
 That makes stroke centres solid and drops the faint halo, at the cost of somewhat heavier letters.
+
+The levels-adjusted versions came back from Pruna with stronger halos and inline outlines: broad grey edge bands
+seem to read to it as shadows or outlines, whatever their shape. So instead of grey averages, the next attempt gives it
+crisp antialiased text with blended letter shapes.
+
+- `--mode sdf` in `composite_sizes.py` blends the sizes' outlines: it thresholds each size's mapped glyph, averages
+  their signed distance fields, and fills where the average is inside. With the raw 12-point bitmap that fails
+  (`NewYork_12_24_sdf_*`), because its one-pixel curves and diagonals either break apart or swell into blobs when
+  thresholded.
+- `blend_picks.py` blends the outlines of Pruna's own picked glyphs instead, using each size's `pick_typical.py`
+  output (`_avg_grey.png` plus `_glyphs.json` for origins and scale) and its bitmap font for metrics. Each pick is
+  mapped onto the target metrics as above, thresholded at 50%, and the signed distance fields are averaged with
+  weights. `NewYork_12_24_pickblend_{only12,w2,eq,only24}` use weights 12:24 of 1:0 (12-point shapes on 24-point
+  metrics), 2:1, 1:1 and 0:1. The `.png` files are the outlines at 6×; the `_1x.png` files are reduced to 24-point size,
+  giving crisp antialiased text to feed back to an upscaler.
+
+```
+python -I tools/blend_picks.py OUT_PREFIX \
+    12=__MACOSX/._LOSTFONTS:FONT:268=phase-grid/pruna-picks-mac/NewYork_12_sq_ls2_mac_6x=2 \
+    24=__MACOSX/._LOSTFONTS:FONT:280=phase-grid/pruna-picks-mac/NewYork_24_sq_ls2_mac_6x=1
+```

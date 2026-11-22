@@ -27,6 +27,10 @@ from macspecimens import collect, QDFont
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("sizes", nargs="+"); ap.add_argument("--ss", type=int, default=6)
 ap.add_argument("--show", default="aegkmsyRQ&@3")
+ap.add_argument("--mode", choices=("mean", "sdf"), default="mean",
+                help="mean: average the sizes' coverage (grey). sdf: threshold each size's coverage at 50%%, average the "
+                     "signed distance fields (weighted), and fill where the average is inside: one crisp blended outline")
+ap.add_argument("--sdf-threshold", type=float, default=0.5, help="coverage level that counts as inside, in --mode sdf")
 ap.add_argument("--blur-per", default="", help="per-size blur overriding --blur, e.g. 12=1,24=2 (sigma in that size's pixels)")
 ap.add_argument("--weights", default="", help="per-size weights for the average, e.g. 12=2,24=1 (default: equal)")
 ap.add_argument("--blur", type=float, default=0.0, help="Gaussian blur (sigma, in each size's own source pixels) applied to "
@@ -122,7 +126,12 @@ def composite_glyph(code, members=None):
             continue
         per.append((label, sample(f, code, TX, TY, invs[label], tb, sb, BLUR.get(label, a.blur))))
     w = np.array([WEIGHT.get(label, 1.0) for label, _ in per])
-    acc = np.tensordot(w / w.sum(), np.array([p for _, p in per]), axes=1)
+    if a.mode == "sdf":
+        from scipy.ndimage import distance_transform_edt as edt
+        sd = [edt(p >= a.sdf_threshold) - edt(p < a.sdf_threshold) for _, p in per]          # + inside, - outside, in supersampled px
+        acc = (np.tensordot(w / w.sum(), np.array(sd), axes=1) > 0).astype(np.float32)
+    else:
+        acc = np.tensordot(w / w.sum(), np.array([p for _, p in per]), axes=1)
     return acc, len(per), per, x_lo
 
 
@@ -149,9 +158,9 @@ img = (255 - np.clip(grey, 0, 1) * 255).round().astype(np.uint8)
 Image.fromarray(img).save(a.out + "_composite_grey.png")
 _h, _w = img.shape[0] // SS * SS, img.shape[1] // SS * SS
 Image.fromarray(img[:_h, :_w]).resize((_w // SS, _h // SS), Image.BOX).save(a.out + "_composite_grey_1x.png")
-THRESH = 0.5 if a.blur == 0 and not any(BLUR.values()) else 0.3     # blurred composites have faint hairlines; 50% would drop them
+THRESH = 0.5 if (a.blur == 0 and not any(BLUR.values())) or a.mode == "sdf" else 0.3     # blurred composites have faint hairlines; 50% would drop them
 Image.fromarray(np.where(grey >= THRESH, 0, 255).astype(np.uint8)).save(a.out + "_composite.png")
-json.dump(dict(target=tlabel, sizes=[l for l, _ in fonts], supersampling=SS, blur_sigma_source_px=a.blur, blur_per_size=BLUR, weights=WEIGHT, line_height_px=line_h * SS,
+json.dump(dict(target=tlabel, sizes=[l for l, _ in fonts], supersampling=SS, blur_sigma_source_px=a.blur, blur_per_size=BLUR, weights=WEIGHT, mode=a.mode, sdf_threshold=a.sdf_threshold, line_height_px=line_h * SS,
                baseline_from_line_top_px=y_top * SS,
                reference_lines={l: dict(zip(("descender", "baseline", "x_height", "cap_height"), map(int, r))) for l, r in srefs.items()},
                glyphs=glyph_info), open(a.out + "_composite_glyphs.json", "w"), indent=1, ensure_ascii=False)
