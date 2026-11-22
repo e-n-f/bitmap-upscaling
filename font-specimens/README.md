@@ -437,11 +437,15 @@ share the 24-point strokes' outer edges and extend inward, which looks like an i
 `size-composite/NewYork_12_on_24_aligned.png` is a Pruna 6× upscale of the New York 12 full-character-set rebuild
 (`replicate-prediction-0qdfnd9yesrmy0d20hz9wa3vg8`) with every glyph moved onto the matching glyph of a Pruna 3× upscale
 of the New York 24 rebuild (`replicate-prediction-26kqda4re1rmy0d20hzbka6yx0`). The image is the same size as the 24-point
-image, 4050×8082, for side-by-side or layered comparison.
+image, 4050×8082, for side-by-side or layered comparison. Made with `tools/align_glyphs_between_sizes.py`.
 
 - **Scale:** both are 324 px to the cap height, so there is no scaling. Each 12-point glyph is only translated.
 - **Placement:** each 12-point glyph is centred on the 24-point glyph's ink box horizontally and sits on its baseline.
-- **Background:** each 12-point crop's background was brightened to white. Ink greys are unchanged.
+- **Which pixels belong to which glyph:** decided from the image itself, because neighbouring 12-point letters touch at
+  their serifs. Connected blobs of ink go to the nearest glyph. A blob spanning several glyphs is split at its lightest
+  column between their centres, which is the seam where the serifs merge. Every other pixel goes to the owner of the
+  nearest ink.
+- **Background:** greys at or above 92% of the paper brightness become white. Ink greys are otherwise unchanged.
 
 `NewYork_12_on_24_overlay.png` overlays the two: ink only in the 12 point is blue, ink only in the 24 point is red,
 ink in both is black.
