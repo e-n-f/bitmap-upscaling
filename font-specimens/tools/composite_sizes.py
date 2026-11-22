@@ -9,7 +9,9 @@ Each glyph is mapped onto the target size's glyph:
   vertically   piecewise-linearly through those reference lines, so they coincide in every size (and beyond the
                outermost lines, by the ratio of the sizes' heights);
   horizontally by stretching its ink extent onto the target glyph's ink extent, so side stems and bowl edges align.
-With --blur SIGMA, each source bitmap is first blurred with a Gaussian of that sigma in its own pixels.
+With --blur SIGMA, each source bitmap is first blurred with a Gaussian of that sigma in its own pixels; --blur-per sets it
+per size. --weights sets per-size weights for the average (default equal). Outputs also include OUT_PREFIX_composite_grey_1x.png,
+the grey composite reduced to the target size's own pixels (each pixel the mean of an SS x SS block).
 Each source bitmap is sampled with bilinear interpolation at --ss subpixels per target pixel; the sizes are averaged
 with equal weight. Glyphs are laid out with the target size's own advance widths and offsets.
 Writes OUT_PREFIX_composite_grey.png, OUT_PREFIX_composite.png (thresholded at 50%, or at 30% with --blur, since blurring
@@ -25,9 +27,13 @@ from macspecimens import collect, QDFont
 ap = argparse.ArgumentParser()
 ap.add_argument("out"); ap.add_argument("sizes", nargs="+"); ap.add_argument("--ss", type=int, default=6)
 ap.add_argument("--show", default="aegkmsyRQ&@3")
+ap.add_argument("--blur-per", default="", help="per-size blur overriding --blur, e.g. 12=1,24=2 (sigma in that size's pixels)")
+ap.add_argument("--weights", default="", help="per-size weights for the average, e.g. 12=2,24=1 (default: equal)")
 ap.add_argument("--blur", type=float, default=0.0, help="Gaussian blur (sigma, in each size's own source pixels) applied to "
                                                          "every source bitmap before it is mapped and averaged")
 a = ap.parse_args()
+BLUR = {k: float(v) for k, v in (x.split("=") for x in a.blur_per.split(",") if x)}
+WEIGHT = {k: float(v) for k, v in (x.split("=") for x in a.weights.split(",") if x)}
 
 fonts = []
 for spec in a.sizes:
@@ -64,18 +70,18 @@ def vmap_inverse(sref, f):
     return inv
 
 
-def sample(f, code, tx, ty, inv, tbox, sbox):
+def sample(f, code, tx, ty, inv, tbox, sbox, blur):
     """coverage of the source glyph at target points (tx right from target pen, ty up from baseline)"""
     bits, xo, adv = f.glyph(code)
     sx = sbox["left"] + (tx - tbox["left"]) * (sbox["right"] - sbox["left"]) / (tbox["right"] - tbox["left"])
     sy = inv(ty)
     # source pixel (r, c) covers x in [xo + c, xo + c + 1), y in [asc - r - 1, asc - r); its centre is the sample point
     cf = sx - xo - 0.5; rf = (f.ascent - sy) - 0.5
-    P = 1 + int(np.ceil(3 * a.blur))
+    P = 1 + int(np.ceil(3 * blur))
     img = np.pad(bits.astype(np.float32), P)
-    if a.blur > 0:
+    if blur > 0:
         from scipy.ndimage import gaussian_filter
-        img = gaussian_filter(img, a.blur, mode="constant")
+        img = gaussian_filter(img, blur, mode="constant")
     c0 = np.floor(cf).astype(int); r0 = np.floor(rf).astype(int); dc = cf - c0; dr = rf - r0
     def at(r, c):
         r = np.clip(r + P, 0, img.shape[0] - 1); c = np.clip(c + P, 0, img.shape[1] - 1)
@@ -114,8 +120,9 @@ def composite_glyph(code, members=None):
         sb = ink_edges(f, code)
         if sb is None:
             continue
-        per.append((label, sample(f, code, TX, TY, invs[label], tb, sb)))
-    acc = np.mean([p for _, p in per], axis=0)
+        per.append((label, sample(f, code, TX, TY, invs[label], tb, sb, BLUR.get(label, a.blur))))
+    w = np.array([WEIGHT.get(label, 1.0) for label, _ in per])
+    acc = np.tensordot(w / w.sum(), np.array([p for _, p in per]), axes=1)
     return acc, len(per), per, x_lo
 
 
@@ -140,9 +147,11 @@ Wmax = max(c.shape[1] for c, _ in out_lines)
 grey = np.vstack([np.pad(c, ((0, 0), (0, Wmax - c.shape[1]))) for c, _ in out_lines])
 img = (255 - np.clip(grey, 0, 1) * 255).round().astype(np.uint8)
 Image.fromarray(img).save(a.out + "_composite_grey.png")
-THRESH = 0.5 if a.blur == 0 else 0.3     # blurred composites have faint hairlines; 50% would drop them
+_h, _w = img.shape[0] // SS * SS, img.shape[1] // SS * SS
+Image.fromarray(img[:_h, :_w]).resize((_w // SS, _h // SS), Image.BOX).save(a.out + "_composite_grey_1x.png")
+THRESH = 0.5 if a.blur == 0 and not any(BLUR.values()) else 0.3     # blurred composites have faint hairlines; 50% would drop them
 Image.fromarray(np.where(grey >= THRESH, 0, 255).astype(np.uint8)).save(a.out + "_composite.png")
-json.dump(dict(target=tlabel, sizes=[l for l, _ in fonts], supersampling=SS, blur_sigma_source_px=a.blur, line_height_px=line_h * SS,
+json.dump(dict(target=tlabel, sizes=[l for l, _ in fonts], supersampling=SS, blur_sigma_source_px=a.blur, blur_per_size=BLUR, weights=WEIGHT, line_height_px=line_h * SS,
                baseline_from_line_top_px=y_top * SS,
                reference_lines={l: dict(zip(("descender", "baseline", "x_height", "cap_height"), map(int, r))) for l, r in srefs.items()},
                glyphs=glyph_info), open(a.out + "_composite_glyphs.json", "w"), indent=1, ensure_ascii=False)

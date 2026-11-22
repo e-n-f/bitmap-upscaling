@@ -378,3 +378,14 @@ output. Its hairlines and serifs are too faint for a clean threshold, so `_compo
 
 The `_1x.png` files are the grey composites reduced to true 24-point size by averaging each 6×6 block, so they are
 ordinary antialiased greyscale text, meant as input for an upscaler.
+
+Pruna's 6× upscales of the three 12+24 versions: the unblurred one and the one blurred at 24-point scale came out with
+doubled edges (the 12- and 24-point shapes drawn as two outlines), while the per-size-blurred one came out clean but
+mostly the 24-point design. To give the 12 point more influence there are three more versions, each with a
+`_composite_grey_1x.png` at true 24-point size:
+
+- `NewYork_12_24_w2_*`: per-size blur 1, with the 12 point weighted 2:1.
+- `NewYork_12_24_w3_*`: the same, weighted 3:1.
+- `NewYork_12_24_eqblur_*`: both sizes blurred by the same 2 px at 24-point scale (`--blur-per 12=1,24=2`), weighted equally.
+
+`composite_sizes.py` gains `--weights` and `--blur-per`, and now always writes the `_composite_grey_1x.png` reduction.
