@@ -328,3 +328,30 @@ side.
 
 `pick_across_runs.py` now accepts `--names` to label upscales that share a scale. `--force` takes those labels
 (e.g. `--force "=:earlier,g:v2"`).
+
+### Size composites
+
+`size-composite/NewYork_*` overlays every size of New York onto the 36-point design and averages them:
+
+- **Sizes:** 9 (System 6.0.8), plus 10, 12, 14, 18, 20, 24 and 36 (LOSTFONTS).
+- **Vertical alignment:** the reference lines are measured from each size's bitmaps: descender (bottom of "p"),
+  baseline, x-height (top of "x") and cap height (top of "H", which equals the ascender in every size). Each glyph is
+  mapped piecewise-linearly through those lines, so they coincide across sizes.
+- **Horizontal alignment:** each glyph's ink is stretched onto the 36-point glyph's ink extent, so side stems and bowl
+  edges align.
+- **Averaging:** each source bitmap is sampled bilinearly at 6 subpixels per 36-point pixel, and the sizes are
+  averaged with equal weight. Glyphs are laid out with the 36-point advance widths.
+
+Outputs:
+
+- `_composite_grey.png`: the average.
+- `_composite.png`: the average thresholded at 50%.
+- `_sizes.png`: selected characters as each size looks after the mapping, beside the average.
+- `_composite_glyphs.json`: reference lines, positions and advances.
+
+The x-height is 0.69–0.78 of the cap height at every size, so the sizes differ mainly in letter shapes and weight,
+not proportions. 9 and 10 point are heavy and blocky, 12 and 14 light and open, 18 heavy, and 20–36 a Times-like design.
+
+```
+python -I tools/composite_sizes.py OUT_PREFIX 9=__MACOSX/._suitcase:FONT:265 ... 36=__MACOSX/._LOSTFONTS:FONT:292
+```
