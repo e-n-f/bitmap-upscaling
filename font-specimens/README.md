@@ -368,3 +368,13 @@ output. Its hairlines and serifs are too faint for a clean threshold, so `_compo
 50%, and is heavier than the design.
 
 `size-composite/Geneva_blur1_*` is the Geneva composite (9–24 onto 24 point) with the same sigma-1 blur.
+
+`size-composite/NewYork_12_24*` combines only New York 12 and 24, on the 24-point metrics, in three versions:
+
+- `NewYork_12_24_*`: no blur.
+- `NewYork_12_24_blur1_*`: each size blurred with sigma 1 in its own pixels. That is 2 px at 24 point for the 12-point
+  half, so it is the softest.
+- `NewYork_12_24_blur24px1_composite_grey*`: the unblurred average blurred once with sigma 1 px at 24-point scale.
+
+The `_1x.png` files are the grey composites reduced to true 24-point size by averaging each 6×6 block, so they are
+ordinary antialiased greyscale text, meant as input for an upscaler.
