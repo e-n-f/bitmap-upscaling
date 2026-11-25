@@ -329,6 +329,11 @@ side.
 `pick_across_runs.py` now accepts `--names` to label upscales that share a scale. `--force` takes those labels
 (e.g. `--force "=:earlier,g:v2"`).
 
+London 18 also has a third Pruna 6× run, made from Gaussian-processed input (`_gauss1.2`,
+`replicate-prediction-88f9c23zy9rmw0d221eawt82fw`), with the usual `pick_typical.py` outputs.
+`London_18_sq_ls2_mac_6x_combined_gauss1.2_*` combines all three London runs (`--names earlier,v2,gauss1.2`), and
+`compare_London_18_gauss1.2.png` shows the three vote averages and that combination.
+
 ### Size composites
 
 `size-composite/NewYork_*` overlays every size of New York onto the 36-point design and averages them:
