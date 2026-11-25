@@ -334,6 +334,10 @@ any other glyphs the font has, 2 px letterspacing, squarish arrangement, and a G
 `SOURCES.txt`). In those BDFs, code points are Unicode, with MouseText in the Private Use Area. Each box's `code` in the
 JSON is that BDF code point. `char` is the character itself, and codes below 32 and DEL are written `<7F>` etc.
 
+`phase-grid/pruna-picks-apple2/` has the `pick_typical.py` votes on Pruna 6× upscales of all six grids
+(`A2_<font>_sq_ls2_6x_*`, with `_report.txt` giving each character's consistency). `A2_all_6x_avg_grey_contact.png`
+stacks the six grey vote averages. In Toronto, Venice and MP.FONT, code 127 is an Apple logo (New York has it at U+F8FF).
+
 ### Second runs, and combining runs
 
 `pruna-picks-mac/` also has second Pruna 6× runs of six fonts. Some were made from Gaussian-processed input (`_gauss`:
