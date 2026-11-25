@@ -357,6 +357,11 @@ points. The EightBit Atari font's vertical metrics are not whole pixels, so its 
 `phase_grid.py --extra HEXRANGES` adds such glyphs. `PixelTTF` (in `specimen2.py`) no longer needs fontTools: it reads
 the font with Pillow and `ttfinfo.py`, and detects the size of a pixel in font units (100 for most, 128 for EightBit Atari).
 
+`phase-grid/pruna-picks-retro/` has the `pick_typical.py` votes on Pruna 6× upscales of these four grids
+(`<grid>_6x_*`, each with a `_report.txt`). `retro_all_6x_avg_grey_contact.png` stacks the four grey vote averages.
+The inverse-video characters vote and average correctly: each crop's levels are measured from its own lightest and
+darkest pixels, and the white margin around each inverse cell keeps the background level right.
+
 ### Second runs, and combining runs
 
 `pruna-picks-mac/` also has second Pruna 6× runs of six fonts. Some were made from Gaussian-processed input (`_gauss`:
