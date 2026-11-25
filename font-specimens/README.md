@@ -338,6 +338,25 @@ JSON is that BDF code point. `char` is the character itself, and codes below 32 
 (`A2_<font>_sq_ls2_6x_*`, with `_report.txt` giving each character's consistency). `A2_all_6x_avg_grey_contact.png`
 stacks the six grey vote averages. In Toronto, Venice and MP.FONT, code 127 is an Apple logo (New York has it at U+F8FF).
 
+### Atari, VIC-20, IBM MDA and TRS-80 Model I
+
+`phase-grid/square-ls2-retro/` has grids, built the same way, for four more computers' character ROMs, drawn from
+pixel TrueType fonts (copies in `ttf/`; sources and glyph ranges in `SOURCES.txt`):
+
+| Grid | Font | Cell height / ascent (px) | Characters |
+|---|---|---|---|
+| `Atari_sq_ls2` | EightBit Atari | 11 / 9 | 259: ASCII plus ATASCII graphics, and inverse video |
+| `VIC20_sq_ls2` | PetMe | 8 / 7 | 285: ASCII plus the uppercase/graphics set, and reverse |
+| `IBM_MDA_sq_ls2` | Px437 IBM MDA | 14 / 11 | 252: code page 437 |
+| `TRS80_M1_sq_ls2` | Another Man's Treasure MIB Raw | 12 / 7 | 165: ASCII, arrows and symbols, and 2×3 block graphics |
+
+Each grid covers the machine's main 256-character ROM, from the font's private-use "raw ROM" range or (for the MDA) code
+page 437. Glyphs that duplicate ones already shown are left out. Box `code`s in the JSON are the fonts' Unicode code
+points. The EightBit Atari font's vertical metrics are not whole pixels, so its cell is rounded out to 11 px.
+
+`phase_grid.py --extra HEXRANGES` adds such glyphs. `PixelTTF` (in `specimen2.py`) no longer needs fontTools: it reads
+the font with Pillow and `ttfinfo.py`, and detects the size of a pixel in font units (100 for most, 128 for EightBit Atari).
+
 ### Second runs, and combining runs
 
 `pruna-picks-mac/` also has second Pruna 6× runs of six fonts. Some were made from Gaussian-processed input (`_gauss`:

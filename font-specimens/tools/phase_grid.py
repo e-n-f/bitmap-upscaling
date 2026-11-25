@@ -42,6 +42,9 @@ ap.add_argument("--short-lines", action="store_true"); ap.add_argument("--square
 ap.add_argument("--ascii", action="store_true", help="also include all printable ASCII punctuation and symbols")
 ap.add_argument("--macroman", action="store_true", help="also include every other inked glyph the font has (codes "
                                                          "128-255 and special low codes such as Chicago's Apple logo)")
+ap.add_argument("--extra", default="", help="also include these codes (hex, comma-separated, ranges with '-', e.g. "
+                                              "E000-E07F,01-1F), 13 per line, skipping empty glyphs and any whose bitmap and "
+                                              "advance equal a glyph already shown (raw ROM ranges duplicate ASCII)")
 ap.add_argument("--caption", help="text drawn in a bitmap font in a band above the grid (the grid moves down by a "
                                   "multiple of 4 px, so all phases are unchanged)")
 ap.add_argument("--caption-font", default=None, help="APPLEDOUBLE:TYPE:ID of the caption's bitmap font "
@@ -74,6 +77,23 @@ if a.macroman:
     used = {c for l in code_lines for c in l}
     extra = [c for c in font.codes() if c not in used and c != 32 and (c < 32 or c >= 127)
              and (g := font.glyph(c)) is not None and g[0].any()]
+    code_lines += [extra[i:i + 13] for i in range(0, len(extra), 13)]
+if a.extra:
+    seen = set()
+    def sig(c):
+        g = font.glyph(c)
+        return None if g is None or not g[0].any() else (g[0].tobytes(), g[0].shape, g[1], g[2])
+    for l in code_lines:
+        for c in l:
+            if (s_ := sig(c)) is not None:
+                seen.add(s_)
+    extra = []
+    for part in a.extra.split(","):
+        lo, _, hi = part.partition("-")
+        for c in range(int(lo, 16), int(hi or lo, 16) + 1):
+            s_ = sig(c)
+            if s_ is not None and s_ not in seen:
+                seen.add(s_); extra.append(c)
     code_lines += [extra[i:i + 13] for i in range(0, len(extra), 13)]
 lines = []
 for cl in code_lines:

@@ -84,17 +84,30 @@ class BDFFont:
 
 
 class PixelTTF:
-    """A TrueType font whose outlines are pixel squares of 100 units (Kreative 1X1Y); rasterised exactly."""
+    """A TrueType font whose outlines are pixel squares (e.g. Kreative's 1X1Y fonts at 100 units per pixel, or VileR's
+    fonts at other sizes); rasterised exactly. The font-unit size of one pixel is detected from the outlines (the
+    greatest common divisor of the ink and gap run lengths of some ASCII glyphs rendered at 1 px per unit), unless given.
+    Reads the font with Pillow's FreeType and ttfinfo.py, so fontTools is not needed."""
     K = 10
 
-    def __init__(self, path):
-        from fontTools.ttLib import TTFont
-        t = TTFont(path)
-        self.cmap = t.getBestCmap(); self.hmtx = t["hmtx"]
-        upm = t["head"].unitsPerEm
-        self.ascent = t["hhea"].ascent // 100; self.descent = -t["hhea"].descent // 100
+    def __init__(self, path, unit=None):
+        import math
+        from ttfinfo import info
+        I = info(path); upm = I["upm"]; self.cmap = set(I["codes"])
+        if unit is None:
+            f1 = ImageFont.truetype(path, upm, layout_engine=ImageFont.Layout.BASIC); unit = 0
+            for ch in "AHMWgx08#@":
+                m = f1.getmask(ch, mode="L")
+                arr = np.array(m).reshape(m.size[1], m.size[0]) >= 128
+                for a2 in (arr, arr.T):
+                    for row in a2:
+                        d = np.flatnonzero(np.diff(row.astype(int)))
+                        for L in np.diff(d):
+                            unit = math.gcd(unit, int(L))
+        self.unit = unit
+        self.ascent = -(-I["ascent"] // unit); self.descent = -(-I["descent"] // unit)     # whole pixels, rounded up
         self.height = self.ascent + self.descent
-        self.font = ImageFont.truetype(path, upm * self.K // 100, layout_engine=ImageFont.Layout.BASIC)
+        self.font = ImageFont.truetype(path, upm * self.K // unit, layout_engine=ImageFont.Layout.BASIC)
 
     def codes(self):
         return sorted(self.cmap)
@@ -102,16 +115,17 @@ class PixelTTF:
     def glyph(self, code):
         if code not in self.cmap:
             return None
-        adv = self.hmtx[self.cmap[code]][0] // 100
+        K = self.K
+        adv = int(round(self.font.getlength(chr(code)) / K))
         lsb_pad = 4                                   # room for glyphs that extend left of the origin
-        W = adv + 2 * lsb_pad + 8; K = self.K
+        W = adv + 2 * lsb_pad + 8
         im = Image.new("L", (W * K, self.height * K), 0)
         ImageDraw.Draw(im).text((lsb_pad * K, self.ascent * K), chr(code), font=self.font, fill=255, anchor="ls")
         bits = np.array(im).astype(float).reshape(self.height, K, W, K).mean(axis=(1, 3)) >= 128
         cols = np.where(bits.any(0))[0]
         if len(cols) == 0:
             return np.zeros((self.height, 0), bool), 0, adv
-        return bits[:, cols[0]:cols[-1] + 1], cols[0] - lsb_pad, adv
+        return bits[:, cols[0]:cols[-1] + 1], int(cols[0]) - lsb_pad, adv
 
 
 def draw_line(font, codes, gap=0, positions=None):

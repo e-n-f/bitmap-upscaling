@@ -1,0 +1,5 @@
+# name | TrueType font (in ttf/) | glyphs beyond printable ASCII (--extra; duplicates of glyphs already shown are skipped)
+Atari_sq_ls2|EightBit_Atari-Regular.ttf|E000-E0FF: the ATASCII character ROM, normal and inverse video
+VIC20_sq_ls2|PetMe.ttf|E200-E2FF: the VIC-20 uppercase/graphics set, normal and reverse (lowercase comes from the ASCII lines)
+IBM_MDA_sq_ls2|Px437_IBM_MDA.ttf|01-1F, 7F and the Unicode equivalents of code page 437's 80-FF
+TRS80_M1_sq_ls2|AnotherMansTreasureMIBRaw.ttf|E000-E0FF: the raw Model I character ROM (arrows, £ ¥ etc., 2x3 block graphics)
