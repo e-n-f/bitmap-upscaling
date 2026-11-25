@@ -315,6 +315,25 @@ correction. In the earlier ASCII grids for Los Angeles 12 and San Francisco 18, 
 the labels of the last few characters on the last line by one. Boxes are now labelled by the glyph's own code, and
 all picks were re-run.
 
+### Apple II MousePaint fonts
+
+`phase-grid/square-ls2-apple2/` has grids for six bitmap fonts from MousePaint (Apple II). Despite some of their names,
+they are not the Mac fonts. They are built the same way as `square-ls2-mac/`: short lines, the 32 ASCII symbols plus
+any other glyphs the font has, 2 px letterspacing, squarish arrangement, and a Geneva 9 caption.
+
+| Grid | MousePaint font | Line height / ascent (px) | Extra glyphs |
+|---|---|---|---|
+| `A2_Athens_sq_ls2` | ATHENS | 12 / 10 | none |
+| `A2_NewYork_sq_ls2` | NEW.YORK | 11 / 9 | one glyph at U+F8FF |
+| `A2_Toronto_sq_ls2` | TORONTO | 11 / 9 | DEL (<7F>) |
+| `A2_Venice_sq_ls2` | VENICE | 10 / 8 | DEL (<7F>) |
+| `A2_MPFont_sq_ls2` | MP.FONT | 9 / 7 | DEL (<7F>) |
+| `A2_SystemCharset_sq_ls2` | SYSTEM.CHARSET | 8 / 7 | MouseText at U+E000–E01F and U+E07F |
+
+`phase_grid.py --font` now reads BDF files. The fonts are read from the BDF conversions in `bdf/` (listed in
+`SOURCES.txt`). In those BDFs, code points are Unicode, with MouseText in the Private Use Area. Each box's `code` in the
+JSON is that BDF code point. `char` is the character itself, and codes below 32 and DEL are written `<7F>` etc.
+
 ### Second runs, and combining runs
 
 `pruna-picks-mac/` also has second Pruna 6× runs of six fonts. Some were made from Gaussian-processed input (`_gauss`:

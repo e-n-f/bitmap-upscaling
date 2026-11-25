@@ -1,6 +1,6 @@
 """Alignment-test specimen: the same few lines of a font repeated at all 16 combinations of x%4 and y%4.
 
-usage: python -I phase_grid.py OUT_PREFIX (--mac APPLEDOUBLE --res FONT:396 | --font FONT.F|FONT.ttf) [--letterspacing N]
+usage: python -I phase_grid.py OUT_PREFIX (--mac APPLEDOUBLE --res FONT:396 | --font FONT.F|FONT.ttf|FONT.bdf) [--letterspacing N]
 Writes OUT_PREFIX.png (1x, pure black and white) and OUT_PREFIX.json (every glyph's box and its block's phase).
 
 The image is a 4x4 grid of blocks. The block in column i, row j has its lines' origins at x = 4*k + i and y = 4*m + j
@@ -29,7 +29,7 @@ import argparse, json, os, sys
 import numpy as np
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from specimen2 import draw_line, BitmapFont, PixelTTF
+from specimen2 import draw_line, BitmapFont, BDFFont, PixelTTF
 
 LONG_LINES = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", "0123456789"]
 SHORT_LINES = ["ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "abcdefghijklm", "nopqrstuvwxyz", "0123456789"]
@@ -54,15 +54,18 @@ if a.mac:
     font = next(QDFont(c[6]) for c in collect(a.mac) if c[1] == rtype and c[2] == int(rid))
     code = lambda ch: ch.encode("mac_roman")[0]
 else:
-    font = PixelTTF(a.font) if a.font.lower().endswith(".ttf") else BitmapFont(a.font)
-    code = ord if a.font.lower().endswith(".ttf") else (lambda ch: ch.encode("mac_roman")[0])
+    ext = a.font.lower().rsplit(".", 1)[-1]
+    font = PixelTTF(a.font) if ext == "ttf" else BDFFont(a.font) if ext == "bdf" else BitmapFont(a.font)
+    code = ord if ext in ("ttf", "bdf") else (lambda ch: ch.encode("mac_roman")[0])
 
 LOW_NAMES = {}                                    # codes below 32 have no Mac Roman meaning; label them <11> etc.
 
 
 def label(c):
-    if a.mac or not a.font.lower().endswith(".ttf"):
-        return f"<{c:02X}>" if c < 32 else bytes([c]).decode("mac_roman")
+    if c < 32 or (c == 127 and a.font and a.font.lower().endswith(".bdf")):
+        return f"<{c:02X}>"
+    if a.mac or not a.font.lower().endswith((".ttf", ".bdf")):
+        return bytes([c]).decode("mac_roman")
     return chr(c)
 
 
@@ -111,6 +114,7 @@ for n in range(16):
 if a.caption:
     cfont = None
     if a.caption_font:
+        from macspecimens import collect, QDFont
         f_, t_, i_ = a.caption_font.rsplit(":", 2)
         cfont = next(QDFont(c[6]) for c in collect(f_) if c[1] == t_ and c[2] == int(i_))
     elif a.mac:

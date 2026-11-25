@@ -32,6 +32,57 @@ class BitmapFont:
         return bits, self.f["kernMax"] + off, wid
 
 
+class BDFFont:
+    """A BDF bitmap font: glyphs indexed by ENCODING (Unicode, or the font's own codes below 32)."""
+    def __init__(self, path):
+        self.g = {}; props = {}; cur = None
+        lines = open(path, encoding="latin-1").read().splitlines(); i = 0
+        while i < len(lines):
+            w = lines[i].split()
+            if not w:
+                i += 1; continue
+            if w[0] in ("FONT_ASCENT", "FONT_DESCENT"):
+                props[w[0]] = int(w[1])
+            elif w[0] == "STARTCHAR":
+                cur = {}
+            elif w[0] == "ENCODING":
+                cur["code"] = int(w[1])
+            elif w[0] == "DWIDTH":
+                cur["adv"] = int(w[1])
+            elif w[0] == "BBX":
+                cur["bbx"] = list(map(int, w[1:5]))
+            elif w[0] == "BITMAP":
+                bw, bh, bx, by = cur["bbx"]; rows = []
+                for r in range(bh):
+                    v = int(lines[i + 1 + r], 16); nb = len(lines[i + 1 + r]) * 4
+                    rows.append([(v >> (nb - 1 - c)) & 1 for c in range(bw)])
+                cur["rows"] = np.array(rows, bool).reshape(bh, bw); i += bh
+            elif w[0] == "ENDCHAR":
+                self.g[cur["code"]] = cur; cur = None
+            i += 1
+        self.ascent, self.descent = props["FONT_ASCENT"], props["FONT_DESCENT"]
+        self.height = self.ascent + self.descent
+
+    def codes(self):
+        return sorted(self.g)
+
+    def glyph(self, code):
+        """-> (bits HxW trimmed to the ink columns, x offset from pen, advance)"""
+        c = self.g.get(code)
+        if c is None:
+            return None
+        bw, bh, bx, by = c["bbx"]
+        full = np.zeros((self.height, bw), bool)
+        top = self.ascent - (by + bh)                     # rows from the top of the line box to the BBX top
+        for r in range(bh):
+            if 0 <= top + r < self.height:
+                full[top + r] = c["rows"][r]
+        cols = np.where(full.any(0))[0]
+        if len(cols) == 0:
+            return np.zeros((self.height, 0), bool), 0, c["adv"]
+        return full[:, cols[0]:cols[-1] + 1], bx + int(cols[0]), c["adv"]
+
+
 class PixelTTF:
     """A TrueType font whose outlines are pixel squares of 100 units (Kreative 1X1Y); rasterised exactly."""
     K = 10

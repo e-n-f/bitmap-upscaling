@@ -1,0 +1,7 @@
+# name | MousePaint font file (Apple II, ProDOS) | BDF used (converted, in bdf/)
+A2_Athens|ATHENS|bdf/ATHENS.bdf
+A2_NewYork|NEW.YORK|bdf/NEW_YORK.bdf
+A2_Toronto|TORONTO|bdf/TORONTO.bdf
+A2_Venice|VENICE|bdf/VENICE.bdf
+A2_MPFont|MP.FONT|bdf/MP_FONT.bdf
+A2_SystemCharset|SYSTEM.CHARSET|bdf/SYSTEM_CHARSET.bdf
